@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    container_name: desa_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: bismillah
+      POSTGRES_DB: village
+    ports:
+      - "5432:5432"
+    volumes:
+      - desa_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  adminer:
+    image: adminer:4
+    container_name: desa_adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+volumes:
+  desa_pg:
