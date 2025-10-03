@@ -37,11 +37,11 @@ sip! aku bikinin roadmap 7 hari yang realistis biar MVP “Aplikasi Desa” (bac
 
 **Hari 2 — Jumat, 3 Okt** · *Auth & RBAC*
 
-* [ ] Endpoint `POST /auth/register` (admin create operator/warga), `POST /auth/login` (JWT), `GET /me`
-* [ ] Middleware JWT + dekorator `ctx.user`
-* [ ] RBAC helper: `requireRole(['admin','operator'])`
-* [ ] Password hashing (argon2/bcrypt-alt), policy password, throttle login
-* [ ] Seed 1 admin + 2 operator + 5 warga
+* [x] Endpoint `POST /auth/register` (admin create operator/warga), `POST /auth/login` (JWT), `GET /me`
+* [x] Middleware JWT + dekorator `ctx.user`
+* [x] RBAC helper: `requireRole(['admin','operator'])`
+* [x] Password hashing (argon2/bcrypt-alt), policy password, throttle login
+* [x] Seed 1 admin + 2 operator + 5 warga
 * **Output**: login jalan, role kebaca, proteksi route berfungsi, test dasar lulus.
 
 **Hari 3 — Sabtu, 4 Okt** · *Penduduk & KK + Query Dinamis*

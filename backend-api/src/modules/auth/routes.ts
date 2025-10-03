@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import {
   createUser,
   findUserByEmail,
@@ -81,6 +81,16 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   })
 
   // Contoh route khusus admin
-  .get("/admin/ping", ({ user }: UserContext) => ({ ok: true, data: user }), {
-    beforeHandle: [requireRole(["admin"])],
-  });
+  .get(
+    "/admin/ping",
+    ({ body, user }: UserContext & { body: { sample: string } }) => {
+      const response = { ok: true, data: user, body: body.sample };
+      return response;
+    },
+    {
+      body: t.Object({
+        sample: t.String(),
+      }),
+      beforeHandle: [requireRole(["admin"])],
+    }
+  );

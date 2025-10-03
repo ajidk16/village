@@ -10,14 +10,24 @@ import {
 } from "./service";
 
 export const householdsRoutes = new Elysia({ prefix: "/households" })
-  .get("/", async ({ query }) => listHouseholds(query), {
-    beforeHandle: [requireRole(["admin", "operator"]) as any],
-    query: HouseholdListQuery,
-  })
+  .get(
+    "/",
+    async ({ query }) => {
+      const result = await listHouseholds(query);
+      return result;
+    },
+    {
+      beforeHandle: [requireRole(["admin", "operator"]) as any],
+      query: HouseholdListQuery,
+    }
+  )
   .get(
     "/:id",
-    async ({ params }) => {
+    async ({ params, set }) => {
       const row = await getHousehold(Number(params.id));
+
+      set.status = row.status === 200 ? 200 : 404;
+
       return row ?? {};
     },
     { beforeHandle: [requireRole(["admin", "operator"])] }
@@ -26,7 +36,8 @@ export const householdsRoutes = new Elysia({ prefix: "/households" })
     "/",
     async ({ body, set }) => {
       const created = await createHousehold(body);
-      set.status = 201;
+      set.status = created.status === 201 ? 201 : 500;
+
       return created;
     },
     {
@@ -36,12 +47,26 @@ export const householdsRoutes = new Elysia({ prefix: "/households" })
   )
   .put(
     "/:id",
-    async ({ params, body }) => updateHousehold(Number(params.id), body),
+    async ({ params, body, set }) => {
+      const result = await updateHousehold(Number(params.id), body);
+      set.status = result.status === 200 ? 200 : 500;
+
+      return result;
+    },
     {
       beforeHandle: [requireRole(["admin", "operator"])],
       body: HouseholdUpdate,
     }
   )
-  .delete("/:id", async ({ params }) => deleteHousehold(Number(params.id)), {
-    beforeHandle: [requireRole(["admin"])],
-  });
+  .delete(
+    "/:id",
+    async ({ params, set }) => {
+      const result = await deleteHousehold(Number(params.id));
+      set.status = result.status === 200 ? 200 : 404;
+
+      return result;
+    },
+    {
+      beforeHandle: [requireRole(["admin"])],
+    }
+  );

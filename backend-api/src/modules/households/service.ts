@@ -80,7 +80,20 @@ export async function getHousehold(id: number) {
     .from(households)
     .where(eq(households.id, id))
     .limit(1);
-  return { message: "Successfully retrieved household", data: row ?? null };
+
+  if (!row) {
+    return {
+      status: 404,
+      message: "Household not found",
+      data: null,
+    };
+  }
+
+  return {
+    status: 200,
+    message: "Successfully retrieved household",
+    data: row ?? null,
+  };
 }
 
 export async function createHousehold(input: {
@@ -90,11 +103,20 @@ export async function createHousehold(input: {
   rw?: string | null;
   dusun?: string | null;
 }) {
-  const [created] = await db
-    .insert(households)
-    .values({ ...input })
-    .returning();
-  return { message: "Household created successfully", data: created };
+  try {
+    const [created] = await db
+      .insert(households)
+      .values({ ...input })
+      .returning();
+
+    return {
+      status: 201,
+      message: "Household created successfully",
+      data: created,
+    };
+  } catch (error) {
+    return { status: 500, message: "Failed to create household", data: error };
+  }
 }
 
 export async function updateHousehold(
@@ -107,12 +129,24 @@ export async function updateHousehold(
     dusun: string | null;
   }>
 ) {
-  const [updated] = await db
-    .update(households)
-    .set({ ...patch })
-    .where(eq(households.id, id))
-    .returning();
-  return { message: "Household updated successfully", data: updated ?? null };
+  try {
+    const [updated] = await db
+      .update(households)
+      .set({ ...patch })
+      .where(eq(households.id, id))
+      .returning();
+    return {
+      status: 200,
+      message: "Household updated successfully",
+      data: updated ?? null,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: "Failed to update household",
+      data: error,
+    };
+  }
 }
 
 export async function deleteHousehold(id: number) {
@@ -120,5 +154,14 @@ export async function deleteHousehold(id: number) {
     .delete(households)
     .where(eq(households.id, id))
     .returning();
+
+  if (!deleted) {
+    return {
+      status: 404,
+      message: "Household not found",
+      data: null,
+    };
+  }
+
   return { message: "Household deleted successfully", data: deleted ?? null };
 }

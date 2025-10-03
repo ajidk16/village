@@ -7,6 +7,8 @@ import {
   integer,
   text,
   jsonb,
+  index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // enums
@@ -44,7 +46,7 @@ export const households = pgTable("households", {
 // residents
 export const residents = pgTable("residents", {
   id: serial("id").primaryKey(),
-  householdId: integer("household_id")
+  household_id: integer("household_id")
     .references(() => households.id)
     .notNull(),
   nik: varchar("nik", { length: 32 }).notNull().unique(),
@@ -59,35 +61,6 @@ export const residents = pgTable("residents", {
   alamat_domisili: text("alamat_domisili"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
-// Letter Templates
-export const letterTemplates = pgTable("letter_templates", {
-  id: serial("id").primaryKey(),
-  code: varchar("code", { length: 50 }).notNull().unique(),
-  name: text("name").notNull(),
-  bodyTemplate: text("body_template").notNull(),
-  requiresAttachments: jsonb("requires_attachments")
-    .$type<string[]>()
-    .default([])
-    .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-// Letter Requests
-export const letterRequests = pgTable("letter_requests", {
-  id: serial("id").primaryKey(),
-  residentId: integer("resident_id").notNull(),
-  templateId: integer("template_id")
-    .notNull()
-    .references(() => letterTemplates.id),
-  status: varchar("status", { length: 50 }).notNull(),
-  nomorSurat: varchar("nomor_surat", { length: 100 }),
-  payloadJson: jsonb("payload_json").$type<Record<string, any>>().default({}),
-  approvedBy: integer("approved_by"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Announcements
@@ -123,12 +96,88 @@ export const files = pgTable("files", {
 });
 
 // Audit Logs
-export const auditLogs = pgTable("audit_logs", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  action: varchar("action", { length: 100 }).notNull(),
-  entity: varchar("entity", { length: 100 }).notNull(),
-  entityId: integer("entity_id").notNull(),
-  metaJson: jsonb("meta_json").$type<Record<string, any>>().default({}),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const auditLogs = pgTable(
+  "audit_logs",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id"), // nullable utk anonymous
+    action: varchar("action", { length: 32 }).notNull(), // create|update|delete|login|logout|…
+    entity: varchar("entity", { length: 64 }).notNull(), // households|residents|auth|…
+    entityId: integer("entity_id"), // opsional
+    path: varchar("path", { length: 256 }).notNull(),
+    method: varchar("method", { length: 8 }).notNull(),
+    status: integer("status").notNull(),
+    meta: jsonb("meta"), // payload ringkas
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    idxEntity: index("audit_entity_idx").on(t.entity),
+    idxUser: index("audit_user_idx").on(t.userId),
+    idxCreatedAt: index("audit_created_at_idx").on(t.createdAt),
+  })
+);
+
+// Letter Templates
+export const letterTemplates = pgTable(
+  "letter_templates",
+  {
+    id: serial("id").primaryKey(),
+    code: varchar("code", { length: 32 }).notNull(),
+    name: varchar("name", { length: 120 }).notNull(),
+    bodyTemplate: text("body_template").notNull(),
+    fieldsMeta: jsonb("fields_meta"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    codeIdx: index("letter_templates_code_idx").on(t.code),
+  })
+);
+
+export const letterReqStatusEnum = pgEnum("letter_req_status", [
+  "draft",
+  "submitted",
+  "approved",
+  "rejected",
+  "issued",
+]);
+
+export const letterRequests = pgTable(
+  "letter_requests",
+  {
+    id: serial("id").primaryKey(),
+    residentId: integer("resident_id").notNull(),
+    templateId: integer("template_id").notNull(),
+    status: letterReqStatusEnum("status").notNull().default("draft"),
+    nomorSurat: varchar("nomor_surat", { length: 128 }),
+    payloadJson: jsonb("payload_json"), // nilai untuk placeholder
+    approvedBy: integer("approved_by"),
+    issuedAt: timestamp("issued_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    idxResident: index("letter_requests_resident_idx").on(t.residentId),
+    idxTemplate: index("letter_requests_template_idx").on(t.templateId),
+    idxStatus: index("letter_requests_status_idx").on(t.status),
+    idxIssuedAt: index("letter_requests_issued_idx").on(t.issuedAt),
+  })
+);
+
+// Counter per template per tahun untuk nomor unik
+export const letterCounters = pgTable(
+  "letter_counters",
+  {
+    id: serial("id").primaryKey(),
+    templateId: integer("template_id").notNull(),
+    year: integer("year").notNull(),
+    seq: integer("seq").notNull().default(0),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    uniq: uniqueIndex("letter_counters_template_year_uq").on(
+      t.templateId,
+      t.year
+    ),
+  })
+);

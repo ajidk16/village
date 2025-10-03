@@ -1,7 +1,7 @@
 import { t } from "elysia";
 
 export const ResidentCreate = t.Object({
-  householdId: t.Numeric(),
+  household_id: t.Numeric(),
   nik: t.String({ minLength: 8 }),
   nama: t.String({ minLength: 2 }),
   jk: t.Optional(t.Union([t.Literal("M"), t.Literal("F")])),

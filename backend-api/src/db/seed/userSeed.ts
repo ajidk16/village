@@ -38,8 +38,33 @@ export const userSeeder = async ({
     role: "operator",
   });
   await userSeeder({
+    name: "Operator 2",
+    email: "op2@desa.local",
+    role: "operator",
+  });
+  await userSeeder({
     name: "Warga 1",
     email: "warga1@desa.local",
+    role: "warga",
+  });
+  await userSeeder({
+    name: "Warga 2",
+    email: "warga2@desa.local",
+    role: "warga",
+  });
+  await userSeeder({
+    name: "Warga 3",
+    email: "warga3@desa.local",
+    role: "warga",
+  });
+  await userSeeder({
+    name: "Warga 4",
+    email: "warga4@desa.local",
+    role: "warga",
+  });
+  await userSeeder({
+    name: "Warga 5",
+    email: "warga5@desa.local",
     role: "warga",
   });
   console.log("Seed selesai");

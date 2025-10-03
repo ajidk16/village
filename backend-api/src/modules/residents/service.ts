@@ -51,7 +51,7 @@ export async function listResidents(query: {
   const rows = await db
     .select({
       id: residents.id,
-      householdId: residents.householdId,
+      household_id: residents.household_id,
       nik: residents.nik,
       nama: residents.nama,
       jk: residents.jk,
@@ -61,7 +61,7 @@ export async function listResidents(query: {
       createdAt: residents.createdAt,
     })
     .from(residents)
-    .leftJoin(households, eq(residents.householdId, households.id))
+    .leftJoin(households, eq(residents.household_id, households.id))
     .where(where as any)
     .orderBy(orderBy as any)
     .limit(limit)
@@ -70,17 +70,24 @@ export async function listResidents(query: {
   const [totalRow] = await db
     .select({ count: countQuery() })
     .from(residents)
-    .leftJoin(households, eq(residents.householdId, households.id))
+    .leftJoin(households, eq(residents.household_id, households.id))
     .where(where as any);
 
-  return { items: rows, page, limit, total: totalRow?.count ?? 0 };
+  return {
+    status: 200,
+    message: "successfully retrieved residents",
+    items: rows,
+    page,
+    limit,
+    total: totalRow?.count ?? 0,
+  };
 }
 
 export async function getResident(id: number) {
   const [row] = await db
     .select({
       id: residents.id,
-      householdId: residents.householdId,
+      household_id: residents.household_id,
       nik: residents.nik,
       nama: residents.nama,
       jk: residents.jk,
@@ -92,7 +99,7 @@ export async function getResident(id: number) {
       updatedAt: residents.updatedAt,
     })
     .from(residents)
-    .leftJoin(households, eq(residents.householdId, households.id))
+    .leftJoin(households, eq(residents.household_id, households.id))
     .where(eq(residents.id, id))
     .limit(1);
 
@@ -104,7 +111,7 @@ export async function getResident(id: number) {
 }
 
 export async function createResident(input: {
-  householdId: number;
+  household_id: number;
   nik: string;
   nama: string;
   jk?: "M" | "F";
@@ -131,7 +138,7 @@ export async function createResident(input: {
 export async function updateResident(
   id: number,
   patch: Partial<{
-    householdId: number;
+    household_id: number;
     nik: string;
     nama: string;
     jk: "M" | "F";
