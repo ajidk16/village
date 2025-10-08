@@ -18,18 +18,27 @@ import {
   letterRequestsRoutes,
   letterTemplatesRoutes,
 } from "./modules/letters/routes";
+import cors from "@elysiajs/cors";
 
 export function buildServer() {
-  const app = new Elysia({ name: "desa-api" })
+  const app = new Elysia({ name: "desa-api", prefix: "/api/v1" })
     .use(errorPlugin)
     .use(requestIdPlugin)
     .use(securityPlugin)
     .use(rateLimitPlugin)
     .use(authPlugin)
     .use(auditPlugin)
+    .use(
+      cors({
+        origin: ["http://localhost:5173"],
+        credentials: true, // WAJIB untuk cookie
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+      })
+    )
 
-    // .use(cors)
     .use(authRoutes)
+
     .use(householdsRoutes)
     .use(residentsRoutes)
     .use(householdsImportRoutes)

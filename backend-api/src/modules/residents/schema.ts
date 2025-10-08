@@ -15,7 +15,6 @@ export const ResidentCreate = t.Object({
 });
 export type ResidentCreate = typeof ResidentCreate.static;
 
-
 export const ResidentUpdate = t.Partial(ResidentCreate);
 export type ResidentUpdate = typeof ResidentUpdate.static;
 
@@ -30,5 +29,7 @@ export const ResidentListQuery = t.Object({
   limit: t.Optional(t.Numeric()),
   sort: t.Optional(t.String()),
   order: t.Optional(t.Union([t.Literal("asc"), t.Literal("desc")])),
+  agama: t.Optional(t.String()),
+  jk: t.Optional(t.String()),
 });
 export type ResidentListQuery = typeof ResidentListQuery.static;

@@ -66,7 +66,13 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         role: row.role,
       });
 
-      return { access_token: token, token_type: "Bearer", expires_in: exp };
+      return {
+        status: 200,
+        message: "Login successfully",
+        access_token: token,
+        token_type: "Bearer",
+        expires_in: exp,
+      };
     },
     { body: loginBody }
   )

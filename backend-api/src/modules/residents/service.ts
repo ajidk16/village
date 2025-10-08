@@ -18,6 +18,8 @@ export async function listResidents(query: {
   page?: number | string;
   limit?: number | string;
   sort?: string;
+  agama?: string;
+  jk?: "M" | "F" | string;
   order?: "asc" | "desc" | string;
 }) {
   const { page, limit, offset, orderDir, sortKey } = parseListQuery(query);
@@ -27,9 +29,11 @@ export async function listResidents(query: {
   const filters: (SQL<unknown> | undefined)[] = [
     query.nik ? ilike(residents.nik, `%${query.nik}%`) : undefined,
     query.nama ? ilike(residents.nama, `%${query.nama}%`) : undefined,
+    query.agama ? ilike(residents.agama, `%${query.agama}%`) : undefined,
     query.rt ? ilike(households.rt, query.rt) : undefined,
     query.rw ? ilike(households.rw, query.rw) : undefined,
     query.dusun ? ilike(households.dusun, `%${query.dusun}%`) : undefined,
+    query.jk ? eq(residents.jk, query.jk) : undefined,
   ];
 
   const where = buildWhere({ q: query.q, searchColumns: searchCols, filters });
@@ -55,6 +59,10 @@ export async function listResidents(query: {
       nik: residents.nik,
       nama: residents.nama,
       jk: residents.jk,
+      agama: residents.agama,
+      pekerjaan: residents.pekerjaan,
+      pendidikan: residents.pendidikan,
+      alamat_domisili: residents.alamat_domisili,
       rt: households.rt,
       rw: households.rw,
       dusun: households.dusun,
@@ -86,15 +94,20 @@ export async function listResidents(query: {
 export async function getResident(id: number) {
   const [row] = await db
     .select({
-      id: residents.id,
       household_id: residents.household_id,
       nik: residents.nik,
       nama: residents.nama,
       jk: residents.jk,
+      agama: residents.agama,
+      pekerjaan: residents.pekerjaan,
+      pendidikan: residents.pendidikan,
+      alamat_domisili: residents.alamat_domisili,
       rt: households.rt,
       rw: households.rw,
       dusun: households.dusun,
-      alamat_domisili: residents.alamat_domisili,
+      tempat_lahir: residents.tempat_lahir,
+      tgl_lahir: residents.tgl_lahir,
+      status_kawin: residents.status_kawin,
       createdAt: residents.createdAt,
       updatedAt: residents.updatedAt,
     })
