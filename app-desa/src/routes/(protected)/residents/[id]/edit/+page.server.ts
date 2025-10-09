@@ -47,12 +47,13 @@ export const actions: Actions = {
 				body: parsed.data,
 				token: locals.token
 			});
-		} catch (err) {
-			if (err instanceof HttpError && err.status === 409) {
-				return fail(409, { errors: { nik: 'NIK sudah terdaftar' }, values: err });
+		} catch (err: unknown) {
+			if (err instanceof HttpError && err.status === 500) {
+				return fail(500, { errors: { nik: 'NIK sudah terdaftar' }, values: raw });
 			}
 			return fail(400, { errors: { form: 'Gagal memperbarui. Coba lagi.' }, values: raw });
 		}
+
 		const qs = new URLSearchParams(url.searchParams);
 		qs.set('toast', 'updated');
 		throw redirect(303, `/residents?${qs.toString()}`);

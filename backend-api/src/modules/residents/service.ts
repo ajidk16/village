@@ -47,7 +47,7 @@ export async function listResidents(query: {
   };
   const orderBy = buildOrderBy({
     sortKey,
-    orderDir,
+    orderDir: "desc",
     columns: sortColumns,
     defaultColumn: "id",
   });

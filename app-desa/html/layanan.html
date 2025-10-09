@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Layanan – Desa Harmoni</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
+              400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+              800: '#3730a3', 900: '#312e81'
+            }
+          },
+          boxShadow: { soft: '0 12px 30px -12px rgb(0 0 0 / 0.25)' }
+        }
+      }
+    }
+  </script>
+  <style>
+    .fade-up{opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
+    .fade-up.show{opacity:1;transform:translateY(0)}
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
+  <!-- Topbar -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
+      <a href="#" class="flex items-center gap-2 font-semibold">
+        <span class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-content-center shadow-soft">DH</span>
+        <span>Desa Harmoni</span>
+      </a>
+      <nav class="ml-auto hidden md:flex items-center gap-6 text-sm">
+        <a class="hover:text-brand-600" href="index.html">Beranda</a>
+        <a class="text-brand-700 dark:text-brand-300 font-medium" href="#">Layanan</a>
+        <a class="hover:text-brand-600" href="berita.html">Berita</a>
+        <a class="hover:text-brand-600" href="kontak.html">Kontak</a>
+      </nav>
+      <button id="themeToggle" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800" aria-label="Toggle tema">🌓</button>
+    </div>
+  </header>
+
+  <!-- Breadcrumbs -->
+  <div class="bg-slate-100 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-sm">
+      <ol class="flex items-center gap-2 text-slate-500">
+        <li><a class="hover:underline" href="index.html">Beranda</a></li>
+        <li>›</li>
+        <li class="text-slate-700 dark:text-slate-300">Layanan</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="py-10 md:py-14 bg-gradient-to-br from-brand-600/10 to-emerald-500/10 border-b border-slate-200/70 dark:border-slate-800/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 gap-6 items-center">
+        <div class="fade-up">
+          <h1 class="text-3xl md:text-4xl font-bold">Layanan Publik Desa</h1>
+          <p class="mt-3 text-slate-600 dark:text-slate-300 max-w-prose">Urus administrasi surat menyurat, kependudukan, usaha & perizinan secara online. Transparan, mudah, dan cepat.</p>
+          <div class="mt-5 flex items-center gap-3">
+            <a href="#form-pengajuan" class="px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white shadow-soft">Ajukan Layanan</a>
+            <a href="#faq" class="px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-white/40 dark:hover:bg-slate-900/40">Lihat FAQ</a>
+          </div>
+        </div>
+        <div class="fade-up">
+          <div class="rounded-3xl border border-slate-200 dark:border-slate-800 h-48 md:h-56 bg-gradient-to-tr from-brand-600/20 to-emerald-500/20"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter & Tabs -->
+  <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+        <div class="flex-1">
+          <label class="relative block">
+            <input id="search" type="text" placeholder="Cari layanan (mis. domisili, usaha, KTP)" class="pl-10 pr-3 py-3 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none"/>
+            <svg class="w-5 h-5 absolute left-3.5 top-3.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16Z"/></svg>
+          </label>
+        </div>
+        <div class="flex gap-2">
+          <button data-cat="all" class="tab-btn px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-medium">Semua</button>
+          <button data-cat="administrasi" class="tab-btn px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">Administrasi</button>
+          <button data-cat="kependudukan" class="tab-btn px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">Kependudukan</button>
+          <button data-cat="perizinan" class="tab-btn px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">Usaha & Perizinan</button>
+          <button data-cat="lainnya" class="tab-btn px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">Lainnya</button>
+        </div>
+      </div>
+
+      <!-- Grid Layanan -->
+      <div id="grid" class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Card template examples -->
+        <div class="card fade-up rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft" data-cat="administrasi" data-title="Surat Pengantar Domisili">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-semibold">Surat Pengantar Domisili</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">Administrasi</span>
+          </div>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Keterangan domisili untuk kebutuhan sekolah/kerja.</p>
+          <div class="mt-4 flex items-center gap-3">
+            <button class="apply-btn px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white" data-service="Surat Pengantar Domisili">Ajukan</button>
+            <button class="text-sm px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">Detail</button>
+          </div>
+        </div>
+
+        <div class="card fade-up rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft" data-cat="kependudukan" data-title="Pembuatan KTP">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-semibold">Pembuatan KTP</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Kependudukan</span>
+          </div>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Pengajuan KTP baru atau perpanjangan masa berlaku.</p>
+          <div class="mt-4 flex items-center gap-3">
+            <button class="apply-btn px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white" data-service="Pembuatan KTP">Ajukan</button>
+            <button class="text-sm px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">Detail</button>
+          </div>
+        </div>
+
+        <div class="card fade-up rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft" data-cat="perizinan" data-title="Surat Keterangan Usaha (SKU)">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-semibold">Surat Keterangan Usaha (SKU)</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Usaha & Perizinan</span>
+          </div>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Bukti legalitas usaha mikro/kecil di wilayah desa.</p>
+          <div class="mt-4 flex items-center gap-3">
+            <button class="apply-btn px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white" data-service="SKU">Ajukan</button>
+            <button class="text-sm px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">Detail</button>
+          </div>
+        </div>
+
+        <div class="card fade-up rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft" data-cat="kependudukan" data-title="Surat Keterangan Tidak Mampu">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-semibold">Surat Keterangan Tidak Mampu</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/40 dark:text-fuchsia-300">Kependudukan</span>
+          </div>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Persyaratan bantuan pendidikan/kesehatan.</p>
+          <div class="mt-4 flex items-center gap-3">
+            <button class="apply-btn px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white" data-service="SKTM">Ajukan</button>
+            <button class="text-sm px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">Detail</button>
+          </div>
+        </div>
+
+        <div class="card fade-up rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft" data-cat="administrasi" data-title="Legalisir Dokumen">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-semibold">Legalisir Dokumen</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">Administrasi</span>
+          </div>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Pengesahan dokumen resmi oleh pemerintah desa.</p>
+          <div class="mt-4 flex items-center gap-3">
+            <button class="apply-btn px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white" data-service="Legalisir">Ajukan</button>
+            <button class="text-sm px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">Detail</button>
+          </div>
+        </div>
+
+        <div class="card fade-up rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft" data-cat="lainnya" data-title="Peminjaman Aula Balai Desa">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-semibold">Peminjaman Aula Balai Desa</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Lainnya</span>
+          </div>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Pengajuan jadwal pemakaian aula untuk kegiatan warga.</p>
+          <div class="mt-4 flex items-center gap-3">
+            <button class="apply-btn px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white" data-service="Peminjaman Aula">Ajukan</button>
+            <button class="text-sm px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">Detail</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination (demo) -->
+      <div class="mt-8 flex items-center justify-between text-sm">
+        <div class="text-slate-500">Menampilkan 1–6 dari 28 layanan</div>
+        <div class="flex items-center gap-1">
+          <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800">‹</button>
+          <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">1</button>
+          <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800">2</button>
+          <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800">3</button>
+          <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800">›</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alur Pengajuan -->
+  <section class="py-12 bg-slate-100 dark:bg-slate-900/40 border-y border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl md:text-3xl font-bold text-center">Alur Pengajuan Layanan</h2>
+      <div class="mt-8 grid md:grid-cols-4 gap-6">
+        <div class="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-brand-600/10 grid place-content-center">1</div>
+          <div class="mt-3 font-semibold">Pilih Layanan</div>
+          <p class="text-sm text-slate-600 dark:text-slate-300">Cari & klik tombol Ajukan</p>
+        </div>
+        <div class="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-brand-600/10 grid place-content-center">2</div>
+          <div class="mt-3 font-semibold">Lengkapi Data</div>
+          <p class="text-sm text-slate-600 dark:text-slate-300">Isi formulir & unggah berkas</p>
+        </div>
+        <div class="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-brand-600/10 grid place-content-center">3</div>
+          <div class="mt-3 font-semibold">Verifikasi</div>
+          <p class="text-sm text-slate-600 dark:text-slate-300">Petugas memeriksa & memberi status</p>
+        </div>
+        <div class="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+          <div class="w-12 h-12 mx-auto rounded-xl bg-brand-600/10 grid place-content-center">4</div>
+          <div class="mt-3 font-semibold">Ambil/Unduh</div>
+          <p class="text-sm text-slate-600 dark:text-slate-300">Ambil dokumen fisik atau unduh PDF</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Form Pengajuan (Anchor) -->
+  <section id="form-pengajuan" class="py-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl p-6 md:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-soft">
+        <h3 class="text-xl font-semibold">Ajukan Layanan</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">Isi formulir berikut. Data akan diverifikasi oleh petugas.</p>
+        <form class="mt-6 grid gap-4">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm" for="jenis">Jenis Layanan</label>
+              <select id="jenis" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-brand-500 focus:border-brand-500">
+                <option>Surat Pengantar Domisili</option>
+                <option>Pembuatan KTP</option>
+                <option>Surat Keterangan Usaha (SKU)</option>
+                <option>Surat Keterangan Tidak Mampu</option>
+                <option>Legalisir Dokumen</option>
+                <option>Peminjaman Aula Balai Desa</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm" for="nik">NIK</label>
+              <input id="nik" type="text" placeholder="16 digit" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-brand-500 focus:border-brand-500"/>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm" for="nama">Nama Lengkap</label>
+              <input id="nama" type="text" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-brand-500 focus:border-brand-500"/>
+            </div>
+            <div>
+              <label class="text-sm" for="telp">No. HP</label>
+              <input id="telp" type="tel" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-brand-500 focus:border-brand-500"/>
+            </div>
+          </div>
+          <div>
+            <label class="text-sm" for="alamat">Alamat</label>
+            <input id="alamat" type="text" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-brand-500 focus:border-brand-500"/>
+          </div>
+          <div>
+            <label class="text-sm" for="berkas">Unggah Berkas (PDF/JPG)</label>
+            <input id="berkas" type="file" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-brand-500 focus:border-brand-500"/>
+          </div>
+          <div>
+            <label class="text-sm" for="catatan">Catatan</label>
+            <textarea id="catatan" rows="3" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-brand-500 focus:border-brand-500"></textarea>
+          </div>
+          <div class="flex items-center justify-between">
+            <p class="text-xs text-slate-500">Dengan mengajukan, Anda menyetujui ketentuan layanan.</p>
+            <button type="button" id="submitForm" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white">Kirim Pengajuan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-12 bg-slate-100 dark:bg-slate-900/40 border-t border-slate-200 dark:border-slate-800">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl md:text-3xl font-bold text-center">Pertanyaan yang Sering Diajukan</h2>
+      <div class="mt-6 divide-y divide-slate-200 dark:divide-slate-800 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <details class="group p-5">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <span class="font-medium">Berapa lama waktu proses layanan?</span>
+            <span class="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Rata-rata 1–3 hari kerja tergantung jenis layanan dan kelengkapan berkas.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <span class="font-medium">Apakah bisa diwakilkan?</span>
+            <span class="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Bisa, dengan membawa surat kuasa dan identitas yang sah.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <span class="font-medium">Apakah layanan berbayar?</span>
+            <span class="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Sebagian layanan gratis, sebagian lain mengikuti Perdes retribusi yang berlaku.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal Pengajuan Cepat -->
+  <div id="modal" class="fixed inset-0 z-50 hidden">
+    <div id="backdrop" class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl p-6">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold">Ajukan Layanan</h3>
+          <button id="closeModal" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800">✕</button>
+        </div>
+        <form class="mt-4 grid gap-4">
+          <div>
+            <label class="text-sm" for="modalJenis">Jenis Layanan</label>
+            <input id="modalJenis" type="text" readonly class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"/>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm" for="modalNama">Nama</label>
+              <input id="modalNama" type="text" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"/>
+            </div>
+            <div>
+              <label class="text-sm" for="modalTelp">No. HP</label>
+              <input id="modalTelp" type="tel" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"/>
+            </div>
+          </div>
+          <div>
+            <label class="text-sm" for="modalCatatan">Catatan</label>
+            <textarea id="modalCatatan" rows="3" class="mt-1 w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"></textarea>
+          </div>
+          <div class="flex items-center justify-end gap-2">
+            <button type="button" id="cancelModal" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800">Batal</button>
+            <button type="button" id="submitModal" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white">Kirim</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 hidden">
+    <div class="px-4 py-3 rounded-xl bg-emerald-600 text-white shadow-lg">Pengajuan terkirim! Kami akan menghubungi Anda.</div>
+  </div>
+
+  <footer class="border-t border-slate-200 dark:border-slate-800 py-8 text-center text-xs text-slate-500">© <span id="year"></span> Pemerintah Desa Harmoni</footer>
+
+  <script>
+    // Theme
+    const root = document.documentElement
+    const storedTheme = localStorage.getItem('theme')
+    if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) root.classList.add('dark')
+    document.getElementById('themeToggle').addEventListener('click',()=>{
+      root.classList.toggle('dark');
+      localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light')
+    })
+
+    // Reveal on scroll
+    const obs = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('show') }) },{threshold:0.2})
+    document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el))
+
+    // Tabs & Search filter
+    const cards = [...document.querySelectorAll('.card')]
+    const tabBtns = document.querySelectorAll('.tab-btn')
+    function renderFilter(cat, keyword){
+      const key = (keyword||'').toLowerCase()
+      cards.forEach(c=>{
+        const matchCat = cat==='all' || c.dataset.cat===cat
+        const matchKey = !key || c.dataset.title.toLowerCase().includes(key)
+        c.style.display = (matchCat && matchKey) ? '' : 'none'
+      })
+      tabBtns.forEach(b=>b.classList.toggle('bg-white', b.dataset.cat!==cat))
+      tabBtns.forEach(b=>b.classList.toggle('bg-slate-100', b.dataset.cat===cat))
+      tabBtns.forEach(b=>b.classList.toggle('dark:bg-slate-800', b.dataset.cat===cat))
+    }
+    let currentCat = 'all'
+    tabBtns.forEach(btn=>btn.addEventListener('click',()=>{ currentCat = btn.dataset.cat; renderFilter(currentCat, document.getElementById('search').value) }))
+    document.getElementById('search').addEventListener('input',(e)=> renderFilter(currentCat, e.target.value))
+    renderFilter('all','')
+
+    // Modal quick apply
+    const modal = document.getElementById('modal')
+    const modalJenis = document.getElementById('modalJenis')
+    const toast = document.getElementById('toast')
+    document.querySelectorAll('.apply-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        modalJenis.value = btn.dataset.service
+        modal.classList.remove('hidden')
+      })
+    })
+    function closeModal(){ modal.classList.add('hidden') }
+    document.getElementById('closeModal').addEventListener('click', closeModal)
+    document.getElementById('cancelModal').addEventListener('click', closeModal)
+    document.getElementById('backdrop').addEventListener('click', closeModal)
+
+    // Submit handlers (demo)
+    function showToast(){
+      toast.classList.remove('hidden')
+      setTimeout(()=> toast.classList.add('hidden'), 2200)
+    }
+    document.getElementById('submitModal').addEventListener('click',()=>{ closeModal(); showToast() })
+    document.getElementById('submitForm').addEventListener('click',()=>{ showToast() })
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear()
+  </script>
+</body>
+</html>

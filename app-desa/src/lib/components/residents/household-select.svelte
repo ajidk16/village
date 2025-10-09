@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { api } from '$lib/api';
-	import type { PageData } from '../../../routes/$types';
+	import { householdStore } from '$lib/stores/households/index.js';
+	import { onMount } from 'svelte';
 
 	export let name = 'household_id';
 	export let value: string | null = null;
@@ -11,32 +11,58 @@
 	let loading = false;
 	let timer: any;
 
-	// fetch opsi
-	async function search(q: string) {
-		loading = true;
-		try {
-			const res = await api(`/household?q=${encodeURIComponent(q)}`, {
-				method: 'GET'
-				// token:
-			});
-			const json = await res.json();
+	// Subscribe to household store
+	$: households = $householdStore.items || [];
 
-			const arr = Array.isArray(json) ? json : (json.data ?? []);
-			options = arr.map((x: any) => ({
-				id: String(x.id),
-				label: x.nama_kepala_keluarga ?? x.head_name ?? x.label ?? `KK #${x.id}`
-			}));
-		} catch {
-			options = [];
-		} finally {
-			loading = false;
+	// Set initial label berdasarkan value yang ada
+	$: if (value && households.length > 0 && !label) {
+		const found = households.find((h) => h.id.toString() === value);
+		if (found) {
+			label = `${found.no_kk} - ${found.alamat}`;
+			typing = label;
 		}
 	}
 
-	function onInput(e: Event) {
-		typing = (e.target as HTMLInputElement).value;
+	onMount(async () => {
+		await householdStore.fetchAll();
+	});
+
+	function searchHouseholds(query: string) {
+		if (!query.trim()) {
+			options = [];
+			return;
+		}
+
+		const filtered = households
+			.filter(
+				(h) =>
+					h.no_kk.toLowerCase().includes(query.toLowerCase()) ||
+					h.alamat.toLowerCase().includes(query.toLowerCase())
+			)
+			.map((h) => ({
+				id: h.id.toString(),
+				label: `${h.no_kk} - ${h.alamat}`
+			}))
+			.slice(0, 10); // Limit to 10 results
+
+		options = filtered;
+	}
+
+	function handleInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		typing = target.value;
+
+		// Clear selected value if typing doesn't match
+		if (typing !== label) {
+			value = null;
+			label = '';
+		}
+
+		// Debounce search
 		clearTimeout(timer);
-		timer = setTimeout(() => search(typing), 250);
+		timer = setTimeout(() => {
+			searchHouseholds(typing);
+		}, 300);
 	}
 
 	function pick(o: { id: string; label: string }) {
@@ -53,7 +79,7 @@
 		class="w-full rounded border-gray-300"
 		placeholder="Cari KK (nama/no)"
 		value={typing || label}
-		on:input={onInput}
+		on:input={handleInput}
 	/>
 	{#if loading}
 		<div class="absolute top-2.5 right-3 text-xs opacity-70">memuat…</div>

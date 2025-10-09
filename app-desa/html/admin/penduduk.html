@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="id">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Admin • Penduduk – Desa Harmoni</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script>
+			tailwind.config = {
+				theme: {
+					extend: {
+						colors: {
+							brand: {
+								50: '#eef2ff',
+								100: '#e0e7ff',
+								200: '#c7d2fe',
+								300: '#a5b4fc',
+								400: '#818cf8',
+								500: '#6366f1',
+								600: '#4f46e5',
+								700: '#4338ca',
+								800: '#3730a3',
+								900: '#312e81'
+							}
+						},
+						boxShadow: { soft: '0 14px 32px -14px rgb(0 0 0 / .3)' }
+					}
+				}
+			};
+		</script>
+		<style>
+			.fade-up {
+				opacity: 0;
+				transform: translateY(8px);
+				transition:
+					opacity 0.4s,
+					transform 0.4s;
+			}
+			.fade-up.show {
+				opacity: 1;
+				transform: translateY(0);
+			}
+			.table-scroll {
+				scrollbar-width: thin;
+			}
+		</style>
+	</head>
+	<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
+		<!-- Topbar -->
+		<header
+			class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80"
+		>
+			<div class="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+				<a href="#" class="flex items-center gap-2">
+					<div
+						class="grid h-9 w-9 place-content-center rounded-xl bg-brand-600 font-bold text-white"
+					>
+						DH
+					</div>
+					<span class="font-semibold">Desa Harmoni</span>
+				</a>
+				<nav class="ml-6 hidden items-center gap-4 text-sm md:flex">
+					<a class="rounded-lg px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800" href="#"
+						>Dashboard</a
+					>
+					<a
+						class="rounded-lg bg-brand-600/10 px-3 py-1.5 text-brand-700 dark:text-brand-300"
+						href="#"
+						>Penduduk</a
+					>
+					<a class="rounded-lg px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800" href="#"
+						>Layanan</a
+					>
+					<a class="rounded-lg px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800" href="#"
+						>Keuangan</a
+					>
+				</nav>
+				<div class="ml-auto flex items-center gap-3">
+					<label class="relative hidden md:block">
+						<input
+							id="q"
+							type="text"
+							placeholder="Cari nama/NIK…"
+							class="w-72 rounded-xl border border-slate-300 bg-white py-2 pr-3 pl-9 outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-700 dark:bg-slate-800"
+						/>
+						<svg
+							class="absolute top-2.5 left-2.5 h-5 w-5 text-slate-400"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1.5"
+								d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16Z"
+							/>
+						</svg>
+					</label>
+					<button
+						id="themeToggle"
+						class="rounded-lg border border-slate-200 p-2 dark:border-slate-800"
+					>
+						🌓
+					</button>
+					<button
+						id="btnAdd"
+						class="rounded-xl bg-brand-600 px-3 py-2 text-sm text-white shadow-soft hover:bg-brand-700"
+					>
+						+ Tambah
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+			<!-- Filters & bulk actions -->
+			<section
+				class="rounded-2xl border border-slate-200 bg-white p-4 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+			>
+				<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+					<div>
+						<label class="text-xs text-slate-500">Dusun</label>
+						<select
+							id="fDusun"
+							class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+						>
+							<option value="">Semua</option>
+							<option>Anggrek</option>
+							<option>Melati</option>
+							<option>Flamboyan</option>
+						</select>
+					</div>
+					<div>
+						<label class="text-xs text-slate-500">RT</label>
+						<select
+							id="fRT"
+							class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+						>
+							<option value="">Semua</option>
+							<option>001</option>
+							<option>002</option>
+							<option>003</option>
+						</select>
+					</div>
+					<div>
+						<label class="text-xs text-slate-500">Jenis Kelamin</label>
+						<select
+							id="fJK"
+							class="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+						>
+							<option value="">Semua</option>
+							<option value="L">Laki-laki</option>
+							<option value="P">Perempuan</option>
+						</select>
+					</div>
+					<div>
+						<label class="text-xs text-slate-500">Status Kawin</label>
+						<select
+							id="fSK"
+							class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+						>
+							<option value="">Semua</option>
+							<option>Kawin</option>
+							<option>Belum Kawin</option>
+							<option>Cerai</option>
+						</select>
+					</div>
+					<div>
+						<label class="text-xs text-slate-500">Usia (≥)</label>
+						<input
+							id="fAgeMin"
+							type="number"
+							min="0"
+							class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+							placeholder="18"
+						/>
+					</div>
+					<div>
+						<label class="text-xs text-slate-500">Usia (≤)</label>
+						<input
+							id="fAgeMax"
+							type="number"
+							min="0"
+							class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+							placeholder="60"
+						/>
+					</div>
+				</div>
+				<div class="mt-3 flex flex-wrap gap-2">
+					<button
+						id="btnApply"
+						class="rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
+					>
+						Terapkan
+					</button>
+					<button
+						id="btnReset"
+						class="rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
+					>
+						Reset
+					</button>
+					<div class="ml-auto flex gap-2">
+						<label
+							class="cursor-pointer rounded-xl border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-500 dark:border-slate-700"
+						>
+							<input id="csvInput" type="file" accept=".csv" class="hidden" />
+							Import CSV
+						</label>
+						<button
+							id="btnExport"
+							class="rounded-xl bg-brand-600 px-3 py-2 text-sm text-white shadow-soft hover:bg-brand-700"
+						>
+							Export CSV
+						</button>
+						<button
+							id="btnDeleteSelected"
+							class="rounded-xl bg-red-600 px-3 py-2 text-sm text-white shadow-soft hover:bg-red-700"
+						>
+							Hapus Terpilih
+						</button>
+					</div>
+				</div>
+			</section>
+
+			<!-- Table -->
+			<section
+				class="mt-6 rounded-2xl border border-slate-200 bg-white shadow-soft dark:border-slate-800 dark:bg-slate-900"
+			>
+				<div class="flex items-center justify-between p-4">
+					<div class="text-sm text-slate-500"><span id="count"></span> data</div>
+					<div class="flex items-center gap-2 text-sm">
+						<span>Baris:</span>
+						<select
+							id="pageSize"
+							class="rounded-lg border border-slate-300 bg-white px-2 py-1 dark:border-slate-700 dark:bg-slate-800"
+						>
+							<option>10</option>
+							<option>25</option>
+							<option>50</option>
+						</select>
+					</div>
+				</div>
+				<div class="table-scroll overflow-x-auto">
+					<table class="min-w-full text-sm">
+						<thead
+							class="border-y border-slate-200 bg-slate-50 text-left dark:border-slate-800 dark:bg-slate-800/40"
+						>
+							<tr>
+								<th class="w-10 py-3 pr-2 pl-4">
+									<input id="checkAll" type="checkbox" class="h-4 w-4" />
+								</th>
+								<th class="px-2 py-3">NIK</th>
+								<th class="px-2 py-3">Nama</th>
+								<th class="px-2 py-3">JK</th>
+								<th class="px-2 py-3">Tgl Lahir</th>
+								<th class="px-2 py-3">Usia</th>
+								<th class="px-2 py-3">Dusun</th>
+								<th class="px-2 py-3">RT</th>
+								<th class="px-2 py-3">Status</th>
+								<th class="px-2 py-3 pr-4 text-right">Aksi</th>
+							</tr>
+						</thead>
+						<tbody id="tbody"></tbody>
+					</table>
+				</div>
+				<div
+					class="flex items-center justify-between border-t border-slate-200 p-4 text-sm dark:border-slate-800"
+				>
+					<div id="pageInfo" class="text-slate-500">Halaman 1</div>
+					<div class="flex items-center gap-2">
+						<button
+							id="prev"
+							class="rounded-lg border border-slate-200 px-3 py-1.5 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
+						>
+							Sebelumnya
+						</button>
+						<div id="pages" class="flex items-center gap-1"></div>
+						<button
+							id="next"
+							class="rounded-lg border border-slate-200 px-3 py-1.5 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
+						>
+							Berikutnya
+						</button>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<!-- Modal Add/Edit -->
+		<div id="modal" class="fixed inset-0 z-50 hidden">
+			<div id="backdrop" class="absolute inset-0 bg-black/40"></div>
+			<div class="absolute inset-0 grid place-items-center p-4">
+				<div
+					class="w-full max-w-xl rounded-2xl border border-slate-200 bg-white shadow-soft dark:border-slate-800 dark:bg-slate-900"
+				>
+					<div
+						class="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-800"
+					>
+						<h3 id="modalTitle" class="font-semibold">Tambah Penduduk</h3>
+						<button
+							id="modalClose"
+							class="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+						>
+							✕
+						</button>
+					</div>
+					<form id="form" class="grid gap-4 p-4 sm:grid-cols-2">
+						<input type="hidden" id="rowId" />
+						<div>
+							<label class="text-xs text-slate-500">NIK</label>
+							<input
+								id="nik"
+								required
+								minlength="16"
+								maxlength="16"
+								class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+								placeholder="3172xxxxxxxxxxxx"
+							/>
+						</div>
+						<div>
+							<label class="text-xs text-slate-500">Nama</label>
+							<input
+								id="nama"
+								required
+								class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+								placeholder="Nama lengkap"
+							/>
+						</div>
+						<div>
+							<label class="text-xs text-slate-500">Jenis Kelamin</label>
+							<select
+								id="jk"
+								class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+							>
+								<option value="L">Laki-laki</option>
+								<option value="P">Perempuan</option>
+							</select>
+						</div>
+						<div>
+							<label class="text-xs text-slate-500">Tanggal Lahir</label>
+							<input
+								id="tgl"
+								type="date"
+								class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+							/>
+						</div>
+						<div class="sm:col-span-2">
+							<label class="text-xs text-slate-500">Alamat</label>
+							<input
+								id="alamat"
+								class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+								placeholder="Alamat domisili"
+							/>
+						</div>
+						<div>
+							<label class="text-xs text-slate-500">Dusun</label>
+							<select
+								id="dusun"
+								class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+							>
+								<option>Anggrek</option>
+								<option>Melati</option>
+								<option>Flamboyan</option>
+							</select>
+						</div>
+						<div>
+							<label class="text-xs text-slate-500">RT</label>
+							<select
+								id="rt"
+								class="mt-1 w-full rounded-xl border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+							>
+								<option>001</option>
+								<option>002</option>
+								<option>003</option>
+							</select>
+						</div>
+						<div class="mt-2 flex items-center justify-end gap-2 sm:col-span-2">
+							<button
+								type="button"
+								id="btnCancel"
+								class="rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-800"
+							>
+								Batal
+							</button>
+							<button class="rounded-xl bg-brand-600 px-4 py-2 text-white hover:bg-brand-700">
+								Simpan
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Toast -->
+		<div
+			id="toast"
+			class="fixed right-5 bottom-5 hidden rounded-xl bg-slate-900 px-4 py-2 text-sm text-white shadow-soft"
+		>
+			Tersimpan
+		</div>
+
+		<script>
+			// THEME
+			const root = document.documentElement;
+			const storedTheme = localStorage.getItem('theme');
+			if (
+				storedTheme === 'dark' ||
+				(!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+			)
+				root.classList.add('dark');
+			document.getElementById('themeToggle').addEventListener('click', () => {
+				root.classList.toggle('dark');
+				localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+			});
+
+			// DATA (mock)
+			const data = [
+				{
+					id: 1,
+					nik: '3172021000000001',
+					nama: 'Suraji',
+					jk: 'L',
+					tgl: '1993-04-14',
+					alamat: 'Jl. Melati 1',
+					dusun: 'Melati',
+					rt: '001',
+					status: 'Kawin'
+				},
+				{
+					id: 2,
+					nik: '3172021000000002',
+					nama: 'Siti Rahma',
+					jk: 'P',
+					tgl: '1998-06-12',
+					alamat: 'Jl. Anggrek 2',
+					dusun: 'Anggrek',
+					rt: '002',
+					status: 'Belum Kawin'
+				},
+				{
+					id: 3,
+					nik: '3172021000000003',
+					nama: 'Budi Santoso',
+					jk: 'L',
+					tgl: '1988-11-02',
+					alamat: 'Jl. Flamboyan 3',
+					dusun: 'Flamboyan',
+					rt: '003',
+					status: 'Kawin'
+				},
+				{
+					id: 4,
+					nik: '3172021000000004',
+					nama: 'Rina Kurnia',
+					jk: 'P',
+					tgl: '1995-01-20',
+					alamat: 'Jl. Melati 4',
+					dusun: 'Melati',
+					rt: '001',
+					status: 'Kawin'
+				},
+				{
+					id: 5,
+					nik: '3172021000000005',
+					nama: 'Dodi Saputra',
+					jk: 'L',
+					tgl: '2001-09-08',
+					alamat: 'Jl. Anggrek 5',
+					dusun: 'Anggrek',
+					rt: '002',
+					status: 'Belum Kawin'
+				}
+			];
+
+			// STATE
+			let rows = [...data];
+			let page = 1,
+				pageSize = 10,
+				selected = new Set();
+
+			// UTILS
+			const age = (tgl) => {
+				if (!tgl) return '-';
+				const d = new Date(tgl);
+				const now = new Date();
+				let a = now.getFullYear() - d.getFullYear();
+				const m = now.getMonth() - d.getMonth();
+				if (m < 0 || (m === 0 && now.getDate() < d.getDate())) a--;
+				return a;
+			};
+			const el = (id) => document.getElementById(id);
+			const toast = (msg) => {
+				const t = el('toast');
+				t.textContent = msg;
+				t.classList.remove('hidden');
+				setTimeout(() => t.classList.add('hidden'), 1500);
+			};
+			const badge = (val) => {
+				const map = { Kawin: 'emerald', 'Belum Kawin': 'sky', Cerai: 'amber' };
+				const c = map[val] || 'slate';
+				return `<span class="px-2 py-0.5 rounded-full text-xs bg-${c}-100 text-${c}-700 dark:bg-${c}-900/40 dark:text-${c}-300">${val || '-'}</span>`;
+			};
+
+			// RENDER TABLE
+			function render() {
+				const q = el('q')?.value?.trim().toLowerCase() || '';
+				const fDusun = el('fDusun').value;
+				const fRT = el('fRT').value;
+				const fJK = el('fJK').value;
+				const fSK = el('fSK').value;
+				const min = Number(el('fAgeMin').value || 0);
+				const max = Number(el('fAgeMax').value || 999);
+
+				let filtered = data.filter((r) => {
+					const okQ = !q || r.nama.toLowerCase().includes(q) || r.nik.includes(q);
+					const okDusun = !fDusun || r.dusun === fDusun;
+					const okRT = !fRT || r.rt === fRT;
+					const okJK = !fJK || r.jk === fJK;
+					const okSK = !fSK || r.status === fSK;
+					const a = age(r.tgl);
+					const okAge = a >= min && a <= max;
+					return okQ && okDusun && okRT && okJK && okSK && okAge;
+				});
+
+				rows = filtered;
+				el('count').textContent = rows.length;
+
+				const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+				page = Math.min(page, totalPages);
+				const start = (page - 1) * pageSize;
+				const slice = rows.slice(start, start + pageSize);
+
+				const tbody = el('tbody');
+				tbody.innerHTML = slice
+					.map(
+						(r) => `
+        <tr class="border-b border-slate-100 dark:border-slate-800">
+          <td class="py-3 pl-4 pr-2"><input type="checkbox" data-id="${r.id}" class="rowCheck w-4 h-4" ${selected.has(r.id) ? 'checked' : ''}></td>
+          <td class="py-3 px-2 font-mono">${r.nik}</td>
+          <td class="py-3 px-2">${r.nama}</td>
+          <td class="py-3 px-2">${r.jk}</td>
+          <td class="py-3 px-2">${r.tgl || '-'}</td>
+          <td class="py-3 px-2">${age(r.tgl)}</td>
+          <td class="py-3 px-2">${r.dusun}</td>
+          <td class="py-3 px-2">${r.rt}</td>
+          <td class="py-3 px-2">${badge(r.status)}</td>
+          <td class="py-3 px-2 text-right pr-4">
+            <button class="px-2 py-1 text-brand-700 hover:underline" data-edit="${r.id}">Edit</button>
+            <button class="px-2 py-1 text-red-600 hover:underline" data-del="${r.id}">Hapus</button>
+          </td>
+        </tr>`
+					)
+					.join('');
+
+				el('pageInfo').textContent = `Halaman ${page} dari ${totalPages}`;
+				const pages = el('pages');
+				pages.innerHTML = '';
+				for (let i = 1; i <= totalPages; i++) {
+					const b = document.createElement('button');
+					b.textContent = i;
+					b.className = `px-3 py-1.5 rounded-lg border ${i === page ? 'bg-slate-100 dark:bg-slate-800' : ''} border-slate-200 dark:border-slate-800`;
+					b.addEventListener('click', () => {
+						page = i;
+						render();
+					});
+					pages.appendChild(b);
+				}
+
+				// Row events
+				tbody
+					.querySelectorAll('[data-edit]')
+					.forEach((btn) => btn.addEventListener('click', () => openEdit(btn.dataset.edit)));
+				tbody
+					.querySelectorAll('[data-del]')
+					.forEach((btn) => btn.addEventListener('click', () => delRow(btn.dataset.del)));
+				tbody.querySelectorAll('.rowCheck').forEach((cb) =>
+					cb.addEventListener('change', (e) => {
+						const id = Number(e.target.dataset.id);
+						e.target.checked ? selected.add(id) : selected.delete(id);
+						el('checkAll').checked = isAllVisibleChecked();
+					})
+				);
+				el('checkAll').checked = isAllVisibleChecked();
+			}
+
+			function isAllVisibleChecked() {
+				const start = (page - 1) * pageSize;
+				const slice = rows.slice(start, start + pageSize);
+				return slice.length > 0 && slice.every((r) => selected.has(r.id));
+			}
+
+			// ACTIONS
+			function openAdd() {
+				el('rowId').value = '';
+				el('modalTitle').textContent = 'Tambah Penduduk';
+				el('form').reset();
+				showModal(true);
+			}
+			function openEdit(id) {
+				const r = data.find((x) => x.id == id);
+				if (!r) return;
+				el('rowId').value = r.id;
+				el('nik').value = r.nik;
+				el('nama').value = r.nama;
+				el('jk').value = r.jk;
+				el('tgl').value = r.tgl;
+				el('alamat').value = r.alamat;
+				el('dusun').value = r.dusun;
+				el('rt').value = r.rt;
+				el('modalTitle').textContent = 'Edit Penduduk';
+				showModal(true);
+			}
+			function delRow(id) {
+				const i = data.findIndex((x) => x.id == id);
+				if (i > -1) {
+					data.splice(i, 1);
+					selected.delete(Number(id));
+					render();
+					toast('Data dihapus');
+				}
+			}
+			function showModal(v) {
+				el('modal').classList.toggle('hidden', !v);
+			}
+
+			// EVENTS
+			el('btnAdd').addEventListener('click', openAdd);
+			el('modalClose').addEventListener('click', () => showModal(false));
+			el('btnCancel').addEventListener('click', () => showModal(false));
+			el('backdrop').addEventListener('click', () => showModal(false));
+
+			el('form').addEventListener('submit', (e) => {
+				e.preventDefault();
+				const id = el('rowId').value;
+				const payload = {
+					id: id ? Number(id) : Math.max(0, ...data.map((d) => d.id)) + 1,
+					nik: el('nik').value.trim(),
+					nama: el('nama').value.trim(),
+					jk: el('jk').value,
+					tgl: el('tgl').value,
+					alamat: el('alamat').value.trim(),
+					dusun: el('dusun').value,
+					rt: el('rt').value,
+					status: 'Belum Kawin'
+				};
+				// simple validation
+				if (payload.nik.length !== 16) {
+					alert('NIK harus 16 digit');
+					return;
+				}
+				if (!payload.nama) {
+					alert('Nama wajib diisi');
+					return;
+				}
+
+				if (id) {
+					const i = data.findIndex((x) => x.id == payload.id);
+					data[i] = payload;
+					toast('Perubahan disimpan');
+				} else {
+					data.unshift(payload);
+					toast('Data ditambahkan');
+				}
+				showModal(false);
+				render();
+			});
+
+			// Search & Filters
+			el('q')?.addEventListener('input', () => {
+				page = 1;
+				render();
+			});
+			el('btnApply').addEventListener('click', () => {
+				page = 1;
+				render();
+			});
+			el('btnReset').addEventListener('click', () => {
+				['fDusun', 'fRT', 'fJK', 'fSK', 'fAgeMin', 'fAgeMax'].forEach((id) => (el(id).value = ''));
+				page = 1;
+				render();
+			});
+
+			// Pagination
+			el('pageSize').addEventListener('change', (e) => {
+				pageSize = Number(e.target.value);
+				page = 1;
+				render();
+			});
+			el('prev').addEventListener('click', () => {
+				if (page > 1) {
+					page--;
+					render();
+				}
+			});
+			el('next').addEventListener('click', () => {
+				const total = Math.ceil(rows.length / pageSize);
+				if (page < total) {
+					page++;
+					render();
+				}
+			});
+
+			// Bulk check
+			el('checkAll').addEventListener('change', (e) => {
+				const checked = e.target.checked;
+				const start = (page - 1) * pageSize;
+				const slice = rows.slice(start, start + pageSize);
+				slice.forEach((r) => (checked ? selected.add(r.id) : selected.delete(r.id)));
+				render();
+			});
+
+			el('btnDeleteSelected').addEventListener('click', () => {
+				if (selected.size === 0) return alert('Tidak ada data terpilih');
+				if (!confirm('Hapus data terpilih?')) return;
+				for (const id of Array.from(selected)) {
+					const i = data.findIndex((x) => x.id === id);
+					if (i > -1) data.splice(i, 1);
+				}
+				selected.clear();
+				render();
+				toast('Data terpilih dihapus');
+			});
+
+			// CSV IMPORT/EXPORT (sederhana)
+			el('csvInput').addEventListener('change', (e) => {
+				const file = e.target.files[0];
+				if (!file) return;
+				const reader = new FileReader();
+				reader.onload = () => {
+					const text = reader.result;
+					// Expect header: nik,nama,jk,tgl,alamat,dusun,rt,status
+					const lines = String(text).split(/\r?\n/).filter(Boolean);
+					const [header, ...rowsCsv] = lines;
+					const heads = header.split(',').map((h) => h.trim());
+					const need = ['nik', 'nama', 'jk', 'tgl', 'alamat', 'dusun', 'rt', 'status'];
+					const ok = need.every((n) => heads.includes(n));
+					if (!ok) {
+						alert('Header CSV tidak valid. Gunakan: ' + need.join(','));
+						return;
+					}
+					const idx = Object.fromEntries(heads.map((h, i) => [h, i]));
+					rowsCsv.forEach((line) => {
+						const cols = line.split(',');
+						if (cols.length < heads.length) return;
+						data.push({
+							id: Math.max(0, ...data.map((d) => d.id)) + 1,
+							nik: cols[idx.nik]?.trim(),
+							nama: cols[idx.nama]?.trim(),
+							jk: cols[idx.jk]?.trim(),
+							tgl: cols[idx.tgl]?.trim(),
+							alamat: cols[idx.alamat]?.trim(),
+							dusun: cols[idx.dusun]?.trim(),
+							rt: cols[idx.rt]?.trim(),
+							status: cols[idx.status]?.trim() || 'Belum Kawin'
+						});
+					});
+					render();
+					toast('CSV diimpor');
+				};
+				reader.readAsText(file);
+				e.target.value = '';
+			});
+
+			el('btnExport').addEventListener('click', () => {
+				const heads = ['nik', 'nama', 'jk', 'tgl', 'alamat', 'dusun', 'rt', 'status'];
+				const csv = [heads.join(',')]
+					.concat(data.map((r) => heads.map((h) => r[h] || '').join(',')))
+					.join('\n');
+				const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = 'penduduk.csv';
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				URL.revokeObjectURL(url);
+				toast('CSV diekspor');
+			});
+
+			// INIT
+			render();
+
+			// Reveal
+			const obs = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((e) => {
+						if (e.isIntersecting) e.target.classList.add('show');
+					});
+				},
+				{ threshold: 0.2 }
+			);
+			document.querySelectorAll('.fade-up').forEach((el) => obs.observe(el));
+		</script>
+	</body>
+</html>

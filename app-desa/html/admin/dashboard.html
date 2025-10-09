@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Dashboard – Desa Harmoni</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+		<script>
+			tailwind.config = {
+				theme: {
+					extend: {
+						colors: {
+							brand: {
+								50: '#eef2ff',
+								100: '#e0e7ff',
+								200: '#c7d2fe',
+								300: '#a5b4fc',
+								400: '#818cf8',
+								500: '#6366f1',
+								600: '#4f46e5',
+								700: '#4338ca',
+								800: '#3730a3',
+								900: '#312e81'
+							}
+						},
+						boxShadow: {
+							soft: '0 12px 30px -12px rgb(0 0 0 / 0.25)'
+						}
+					}
+				}
+			};
+		</script>
+		<style>
+			.fade-up {
+				opacity: 0;
+				transform: translateY(10px);
+				transition:
+					opacity 0.5s,
+					transform 0.5s;
+			}
+			.fade-up.show {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		</style>
+	</head>
+	<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
+		<!-- Layout wrapper -->
+		<div class="grid min-h-screen grid-cols-1 lg:grid-cols-[260px_1fr]">
+			<!-- Sidebar -->
+			<aside
+				id="sidebar"
+				class="top-0 hidden h-screen overflow-y-auto border-r border-slate-200 bg-white/80 backdrop-blur lg:sticky lg:block lg:h-screen dark:border-slate-800 dark:bg-slate-900/80"
+			>
+				<div class="flex items-center gap-3 p-4">
+					<div
+						class="grid h-10 w-10 place-content-center rounded-xl bg-brand-600 font-bold text-white shadow-soft"
+					>
+						DH
+					</div>
+					<div>
+						<div class="font-semibold">Desa Harmoni</div>
+						<div class="text-xs text-slate-500">Smart Village</div>
+					</div>
+				</div>
+				<nav class="px-2 py-3 text-sm">
+					<a
+						class="flex items-center gap-3 rounded-xl bg-brand-600/10 px-3 py-2 text-brand-700 dark:text-brand-300"
+						href="#"
+						>🏠 Dashboard</a
+					>
+					<a
+						class="mt-1 flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+						href="#"
+						>🧾 Layanan</a
+					>
+					<a
+						class="mt-1 flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+						href="#"
+						>👥 Penduduk</a
+					>
+					<a
+						class="mt-1 flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+						href="#"
+						>💰 Keuangan</a
+					>
+					<a
+						class="mt-1 flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+						href="#"
+						>📰 Berita</a
+					>
+					<a
+						class="mt-1 flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+						href="#"
+						>⚙️ Pengaturan</a
+					>
+				</nav>
+				<div class="mt-auto hidden p-4 lg:block">
+					<div class="rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
+						<div class="text-xs text-slate-500">Versi Aplikasi</div>
+						<div class="font-medium">v1.0.0</div>
+					</div>
+				</div>
+			</aside>
+
+			<!-- Main -->
+			<main class="min-h-screen">
+				<!-- Topbar -->
+				<header
+					class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80"
+				>
+					<div class="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+						<button
+							id="openSidebar"
+							class="rounded-lg border border-slate-200 p-2 lg:hidden dark:border-slate-800"
+							aria-label="Buka sidebar"
+						>
+							☰
+						</button>
+						<h1 class="text-lg font-semibold">Dashboard</h1>
+						<div class="ml-auto flex items-center gap-3">
+							<div class="hidden md:block">
+								<label class="relative block">
+									<input
+										type="text"
+										placeholder="Cari…"
+										class="w-72 rounded-xl border border-slate-300 bg-white py-2 pr-3 pl-9 outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-700 dark:bg-slate-800"
+									/>
+									<svg
+										class="absolute top-2.5 left-2.5 h-5 w-5 text-slate-400"
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="1.5"
+											d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16Z"
+										/>
+									</svg>
+								</label>
+							</div>
+							<button
+								id="themeToggle"
+								class="rounded-lg border border-slate-200 p-2 dark:border-slate-800"
+								aria-label="Toggle tema"
+							>
+								🌓
+							</button>
+							<div class="relative">
+								<button
+									id="userBtn"
+									class="flex items-center gap-2 rounded-lg border border-slate-200 p-2 dark:border-slate-800"
+								>
+									<div
+										class="h-8 w-8 rounded-full bg-gradient-to-br from-brand-500 to-brand-700"
+									></div>
+									<span class="hidden text-sm sm:block">Admin</span>
+								</button>
+								<div
+									id="userMenu"
+									class="absolute right-0 mt-2 hidden w-44 rounded-xl border border-slate-200 bg-white py-2 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+								>
+									<a
+										class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+										href="#"
+										>Profil</a
+									>
+									<a
+										class="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+										href="#"
+										>Pengaturan</a
+									>
+									<a
+										class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+										href="#"
+										>Keluar</a
+									>
+								</div>
+							</div>
+						</div>
+					</div>
+				</header>
+
+				<!-- Content -->
+				<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+					<!-- KPIs -->
+					<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+						<div
+							class="fade-up rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+						>
+							<div class="text-xs text-slate-500">Penduduk</div>
+							<div class="mt-1 flex items-end justify-between">
+								<div class="text-2xl font-bold">7.214</div>
+								<span
+									class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+									>+2.1%</span
+								>
+							</div>
+						</div>
+						<div
+							class="fade-up rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+						>
+							<div class="text-xs text-slate-500">Permohonan Aktif</div>
+							<div class="mt-1 flex items-end justify-between">
+								<div class="text-2xl font-bold">128</div>
+								<span
+									class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+									>+14</span
+								>
+							</div>
+						</div>
+						<div
+							class="fade-up rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+						>
+							<div class="text-xs text-slate-500">Realisasi APBDes</div>
+							<div class="mt-1 flex items-end justify-between">
+								<div class="text-2xl font-bold">72%</div>
+								<span
+									class="rounded-full bg-sky-100 px-2 py-0.5 text-xs text-sky-700 dark:bg-sky-900/40 dark:text-sky-300"
+									>Q4</span
+								>
+							</div>
+						</div>
+						<div
+							class="fade-up rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+						>
+							<div class="text-xs text-slate-500">Kepuasan Warga</div>
+							<div class="mt-1 flex items-end justify-between">
+								<div class="text-2xl font-bold">4.6/5</div>
+								<span
+									class="rounded-full bg-fuchsia-100 px-2 py-0.5 text-xs text-fuchsia-700 dark:bg-fuchsia-900/40 dark:text-fuchsia-300"
+									>Survey</span
+								>
+							</div>
+						</div>
+					</div>
+
+					<!-- Charts -->
+					<div class="mt-8 grid items-stretch gap-6 lg:grid-cols-3">
+						<div
+							class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft lg:col-span-2 dark:border-slate-800 dark:bg-slate-900"
+						>
+							<div class="flex items-center justify-between">
+								<h3 class="font-semibold">Permohonan Per Minggu</h3>
+								<select
+									id="rangeSelect"
+									class="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-800"
+								>
+									<option value="8">8 minggu</option>
+									<option value="12">12 minggu</option>
+									<option value="24">24 minggu</option>
+								</select>
+							</div>
+							<div class="mt-4"><canvas id="permohonanChart" height="110"></canvas></div>
+						</div>
+						<div
+							class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+						>
+							<h3 class="font-semibold">Komposisi APBDes</h3>
+							<div class="mt-4"><canvas id="apbdesChart" height="110"></canvas></div>
+							<ul class="mt-4 space-y-1 text-sm text-slate-600 dark:text-slate-300">
+								<li>Belanja Operasional</li>
+								<li>Belanja Modal</li>
+								<li>Pemberdayaan</li>
+								<li>Tak Terduga</li>
+							</ul>
+						</div>
+					</div>
+
+					<!-- Table + Activity -->
+					<div class="mt-8 grid items-start gap-6 lg:grid-cols-3">
+						<div
+							class="rounded-2xl border border-slate-200 bg-white shadow-soft lg:col-span-2 dark:border-slate-800 dark:bg-slate-900"
+						>
+							<div class="flex items-center justify-between p-5">
+								<h3 class="font-semibold">Pengajuan Terbaru</h3>
+								<button
+									class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
+								>
+									Lihat Semua
+								</button>
+							</div>
+							<div class="overflow-x-auto">
+								<table class="min-w-full text-sm">
+									<thead class="border-y border-slate-200 text-left dark:border-slate-800">
+										<tr>
+											<th class="px-5 py-3">No</th>
+											<th class="py-3 pr-5">Pemohon</th>
+											<th class="py-3 pr-5">Jenis Layanan</th>
+											<th class="py-3 pr-5">Tanggal</th>
+											<th class="py-3 pr-5">Status</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr class="border-b border-slate-100 dark:border-slate-800">
+											<td class="px-5 py-3">1</td>
+											<td class="py-3 pr-5">Andi Wijaya</td>
+											<td class="py-3 pr-5">Surat Domisili</td>
+											<td class="py-3 pr-5">09 Okt 2025</td>
+											<td class="py-3 pr-5">
+												<span
+													class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+													>Menunggu</span
+												>
+											</td>
+										</tr>
+										<tr class="border-b border-slate-100 dark:border-slate-800">
+											<td class="px-5 py-3">2</td>
+											<td class="py-3 pr-5">Siti Rahma</td>
+											<td class="py-3 pr-5">Surat Usaha</td>
+											<td class="py-3 pr-5">09 Okt 2025</td>
+											<td class="py-3 pr-5">
+												<span
+													class="rounded-full bg-sky-100 px-2 py-0.5 text-xs text-sky-700 dark:bg-sky-900/40 dark:text-sky-300"
+													>Diproses</span
+												>
+											</td>
+										</tr>
+										<tr>
+											<td class="px-5 py-3">3</td>
+											<td class="py-3 pr-5">Budi Santoso</td>
+											<td class="py-3 pr-5">Keterangan Tidak Mampu</td>
+											<td class="py-3 pr-5">08 Okt 2025</td>
+											<td class="py-3 pr-5">
+												<span
+													class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+													>Selesai</span
+												>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div
+							class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+						>
+							<h3 class="font-semibold">Aktivitas</h3>
+							<ol class="mt-4 space-y-4 text-sm">
+								<li class="flex gap-3">
+									<span class="mt-1.5 h-2 w-2 rounded-full bg-emerald-500"></span>
+									<div>
+										<div class="font-medium">Permohonan #A-9821 selesai</div>
+										<div class="text-xs text-slate-500">09 Okt 2025 • Operator: Rina</div>
+									</div>
+								</li>
+								<li class="flex gap-3">
+									<span class="mt-1.5 h-2 w-2 rounded-full bg-sky-500"></span>
+									<div>
+										<div class="font-medium">Tambah data penduduk (5)</div>
+										<div class="text-xs text-slate-500">09 Okt 2025 • Admin: Dodi</div>
+									</div>
+								</li>
+								<li class="flex gap-3">
+									<span class="mt-1.5 h-2 w-2 rounded-full bg-amber-500"></span>
+									<div>
+										<div class="font-medium">Update pagu APBDes 2025</div>
+										<div class="text-xs text-slate-500">08 Okt 2025 • Bendahara</div>
+									</div>
+								</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+
+				<footer
+					class="border-t border-slate-200 py-6 text-center text-xs text-slate-500 dark:border-slate-800"
+				>
+					© <span id="year"></span> Pemerintah Desa Harmoni
+				</footer>
+			</main>
+		</div>
+
+		<!-- Drawer Sidebar (mobile) -->
+		<div id="drawer" class="fixed inset-0 z-50 hidden">
+			<div class="absolute inset-0 bg-black/30" id="drawerBackdrop"></div>
+			<aside
+				class="absolute top-0 bottom-0 left-0 w-72 border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+			>
+				<div class="flex items-center justify-between">
+					<div class="flex items-center gap-2">
+						<div
+							class="grid h-9 w-9 place-content-center rounded-xl bg-brand-600 font-bold text-white"
+						>
+							DH
+						</div>
+						<span class="font-semibold">Desa Harmoni</span>
+					</div>
+					<button
+						id="closeDrawer"
+						class="rounded-lg border border-slate-200 p-2 dark:border-slate-800"
+					>
+						✕
+					</button>
+				</div>
+				<nav class="mt-4 space-y-1 text-sm">
+					<a
+						class="block rounded-xl bg-brand-600/10 px-3 py-2 text-brand-700 dark:text-brand-300"
+						href="#"
+						>🏠 Dashboard</a
+					>
+					<a class="block rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800" href="#"
+						>🧾 Layanan</a
+					>
+					<a class="block rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800" href="#"
+						>👥 Penduduk</a
+					>
+					<a class="block rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800" href="#"
+						>💰 Keuangan</a
+					>
+					<a class="block rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800" href="#"
+						>📰 Berita</a
+					>
+					<a class="block rounded-xl px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800" href="#"
+						>⚙️ Pengaturan</a
+					>
+				</nav>
+			</aside>
+		</div>
+
+		<script>
+			// Theme
+			const root = document.documentElement;
+			const storedTheme = localStorage.getItem('theme');
+			if (
+				storedTheme === 'dark' ||
+				(!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+			)
+				root.classList.add('dark');
+			document.getElementById('themeToggle').addEventListener('click', () => {
+				root.classList.toggle('dark');
+				localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+			});
+
+			// User menu
+			const userBtn = document.getElementById('userBtn');
+			const userMenu = document.getElementById('userMenu');
+			userBtn.addEventListener('click', () => userMenu.classList.toggle('hidden'));
+			document.addEventListener('click', (e) => {
+				if (!userBtn.contains(e.target) && !userMenu.contains(e.target))
+					userMenu.classList.add('hidden');
+			});
+
+			// Drawer
+			const openSidebar = document.getElementById('openSidebar');
+			const drawer = document.getElementById('drawer');
+			const closeDrawer = document.getElementById('closeDrawer');
+			const drawerBackdrop = document.getElementById('drawerBackdrop');
+			openSidebar.addEventListener('click', () => drawer.classList.remove('hidden'));
+			closeDrawer.addEventListener('click', () => drawer.classList.add('hidden'));
+			drawerBackdrop.addEventListener('click', () => drawer.classList.add('hidden'));
+
+			// Reveal on scroll
+			const obs = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((en) => {
+						if (en.isIntersecting) en.target.classList.add('show');
+					});
+				},
+				{ threshold: 0.2 }
+			);
+			document.querySelectorAll('.fade-up').forEach((el) => obs.observe(el));
+
+			// Charts
+			const palette = {
+				line: 'rgba(99,102,241,0.9)',
+				fill: 'rgba(99,102,241,0.15)',
+				sky: 'rgba(56,189,248,0.9)',
+				amber: 'rgba(245,158,11,0.9)',
+				emerald: 'rgba(16,185,129,0.9)'
+			};
+
+			const weeks = Array.from({ length: 8 }, (_, i) => `M${i + 1}`);
+			const permohonanCtx = document.getElementById('permohonanChart');
+			let permohonanChart = new Chart(permohonanCtx, {
+				type: 'line',
+				data: {
+					labels: weeks,
+					datasets: [
+						{
+							label: 'Permohonan',
+							data: [18, 22, 19, 25, 28, 27, 31, 29],
+							borderColor: palette.line,
+							backgroundColor: palette.fill,
+							fill: true,
+							tension: 0.35,
+							pointRadius: 2
+						}
+					]
+				},
+				options: {
+					plugins: { legend: { display: false } },
+					scales: {
+						x: { grid: { display: false } },
+						y: { beginAtZero: true, ticks: { stepSize: 10 } }
+					}
+				}
+			});
+
+			document.getElementById('rangeSelect').addEventListener('change', (e) => {
+				const len = Number(e.target.value);
+				const labels = Array.from({ length: len }, (_, i) => `M${i + 1}`);
+				const base = [
+					18, 22, 19, 25, 28, 27, 31, 29, 26, 30, 33, 35, 32, 31, 29, 28, 26, 25, 27, 29, 30, 31,
+					33, 34
+				];
+				permohonanChart.data.labels = labels;
+				permohonanChart.data.datasets[0].data = base.slice(0, len);
+				permohonanChart.update();
+			});
+
+			const apbCtx = document.getElementById('apbdesChart');
+			new Chart(apbCtx, {
+				type: 'doughnut',
+				data: {
+					labels: ['Operasional', 'Modal', 'Pemberdayaan', 'Tak Terduga'],
+					datasets: [
+						{
+							data: [45, 30, 20, 5],
+							backgroundColor: [palette.sky, palette.line, palette.emerald, palette.amber]
+						}
+					]
+				},
+				options: { plugins: { legend: { position: 'bottom' } } }
+			});
+
+			// Year
+			document.getElementById('year').textContent = new Date().getFullYear();
+		</script>
+	</body>
+</html>

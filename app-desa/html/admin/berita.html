@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Berita – Desa Harmoni</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' }
+          },
+          boxShadow: { soft:'0 12px 30px -12px rgb(0 0 0 / .25)'}
+        }
+      }
+    }
+  </script>
+  <style>
+    .pill{ @apply px-2 py-0.5 rounded-full text-xs } /* helper if Tailwind JIT enabled */
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
+  <!-- Topbar -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3">
+      <a href="#" class="flex items-center gap-2 font-semibold">
+        <span class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-content-center shadow-soft">DH</span>
+        <span>Admin Berita</span>
+      </a>
+      <div class="ml-auto flex items-center gap-2">
+        <button id="themeToggle" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800" title="Tema">🌓</button>
+        <button id="openCreate" class="px-3 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm shadow-soft">Tulis Berita</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Filters -->
+    <section class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+      <div class="flex flex-col md:flex-row gap-3 md:items-center">
+        <label class="relative block md:flex-1">
+          <input id="q" type="text" placeholder="Cari judul/konten…" class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-brand-500 outline-none"/>
+          <svg class="w-5 h-5 absolute left-2.5 top-2.5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16Z"/></svg>
+        </label>
+        <select id="statusFilter" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <option value="">Semua Status</option>
+          <option value="draft">Draft</option>
+          <option value="published">Terbit</option>
+          <option value="archived">Arsip</option>
+        </select>
+        <select id="categoryFilter" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <option value="">Semua Kategori</option>
+          <option>Pengumuman</option>
+          <option>Kesehatan</option>
+          <option>Pendidikan</option>
+          <option>UMKM</option>
+        </select>
+        <button id="bulkPublish" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm">Terbitkan</button>
+        <button id="bulkArchive" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm">Arsipkan</button>
+        <button id="bulkDelete" class="px-3 py-2 rounded-xl border border-red-200 dark:border-red-900/40 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm">Hapus</button>
+      </div>
+    </section>
+
+    <!-- Table -->
+    <section class="mt-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-soft">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="text-left border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40">
+            <tr>
+              <th class="py-3 px-4 w-10"><input id="checkAll" type="checkbox" class="w-4 h-4"></th>
+              <th class="py-3 pr-4">Judul</th>
+              <th class="py-3 pr-4">Kategori</th>
+              <th class="py-3 pr-4">Penulis</th>
+              <th class="py-3 pr-4">Diperbarui</th>
+              <th class="py-3 pr-4">Status</th>
+              <th class="py-3 pr-4 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="p-4 flex items-center justify-between gap-3 text-sm">
+        <div id="meta">Menampilkan 0</div>
+        <div class="flex items-center gap-2">
+          <button id="prev" class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 disabled:opacity-50">Sebelumnya</button>
+          <div id="pageInfo"></div>
+          <button id="next" class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 disabled:opacity-50">Berikutnya</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Create/Edit -->
+  <div id="modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/40" data-close></div>
+    <div class="absolute inset-x-0 top-10 mx-auto max-w-3xl bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-soft p-6">
+      <div class="flex items-center justify-between">
+        <h3 id="modalTitle" class="font-semibold text-lg">Tulis Berita</h3>
+        <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-800" data-close>✕</button>
+      </div>
+      <form id="form" class="mt-4 space-y-4">
+        <input type="hidden" id="id" />
+        <div>
+          <label class="text-sm">Judul</label>
+          <input id="title" class="mt-1 w-full px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Judul berita" required />
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="text-sm">Kategori</label>
+            <select id="category" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+              <option>Pengumuman</option>
+              <option>Kesehatan</option>
+              <option>Pendidikan</option>
+              <option>UMKM</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm">Status</label>
+            <select id="status" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+              <option value="draft">Draft</option>
+              <option value="published">Terbit</option>
+              <option value="archived">Arsip</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm">Gambar Sampul</label>
+            <input id="cover" type="file" accept="image/*" class="mt-1 w-full text-sm" />
+          </div>
+        </div>
+        <div>
+          <label class="text-sm">Tag (pisah dengan koma)</label>
+          <input id="tags" class="mt-1 w-full px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="desa, layanan, pengumuman" />
+        </div>
+        <div>
+          <label class="text-sm">Konten</label>
+          <div id="content" contenteditable class="mt-1 min-h-[180px] rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 prose prose-sm max-w-none dark:prose-invert">
+            <p>Tulis isi berita di sini…</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs text-slate-500" id="hint">Draft akan disimpan lokal sebelum diterbitkan.</div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="previewBtn" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">Pratinjau</button>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white">Simpan</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Drawer Preview -->
+  <div id="preview" class="fixed inset-0 z-40 hidden">
+    <div class="absolute inset-0 bg-black/30" data-close></div>
+    <aside class="absolute right-0 top-0 bottom-0 w-full md:w-[560px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 p-6 overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold">Pratinjau</h3>
+        <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-800" data-close>✕</button>
+      </div>
+      <article class="mt-4 space-y-3">
+        <img id="previewCover" class="w-full aspect-video object-cover rounded-xl border border-slate-200 dark:border-slate-800" alt="cover"/>
+        <h1 id="previewTitle" class="text-2xl font-bold"></h1>
+        <div class="text-xs text-slate-500" id="previewMeta"></div>
+        <div id="previewContent" class="prose max-w-none dark:prose-invert"></div>
+      </article>
+    </aside>
+  </div>
+
+  <script>
+    // --- Theme ---
+    const root = document.documentElement; const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark' || (!storedTheme && matchMedia('(prefers-color-scheme: dark)').matches)) root.classList.add('dark');
+    document.getElementById('themeToggle').addEventListener('click',()=>{ root.classList.toggle('dark'); localStorage.setItem('theme', root.classList.contains('dark')?'dark':'light') })
+
+    // --- In-memory store (persisted to localStorage) ---
+    const storeKey = 'desa-news-v1';
+    const perPage = 8; let page = 1; let state = load();
+    function load(){ try{ return JSON.parse(localStorage.getItem(storeKey)) || seed() }catch{ return seed() } }
+    function save(){ localStorage.setItem(storeKey, JSON.stringify(state)) }
+    function uid(){ return Math.random().toString(36).slice(2,9) }
+    function seed(){
+      const now = new Date().toISOString();
+      return { articles: [
+        {id:uid(), title:'Pelatihan UMKM: Branding & Pemasaran', category:'UMKM', author:'Admin', status:'published', updatedAt:now, tags:['umkm','pelatihan'], cover:'', content:'<p>Pelatihan untuk meningkatkan kemampuan pemasaran digital pelaku UMKM desa.</p>'},
+        {id:uid(), title:'Posyandu Balita Periode Oktober', category:'Kesehatan', author:'Bid. Kesehatan', status:'published', updatedAt:now, tags:['posyandu'], cover:'', content:'<p>Jadwal posyandu di tiap dusun, mohon hadir tepat waktu.</p>'},
+        {id:uid(), title:'Gotong Royong Saluran Irigasi', category:'Pengumuman', author:'Admin', status:'draft', updatedAt:now, tags:['gotong-royong'], cover:'', content:'<p>Dilaksanakan Minggu pagi demi kelancaran musim tanam.</p>'}
+      ] }
+    }
+
+    // --- DOM refs ---
+    const rows = document.getElementById('rows');
+    const q = document.getElementById('q');
+    const statusFilter = document.getElementById('statusFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const meta = document.getElementById('meta');
+    const pageInfo = document.getElementById('pageInfo');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const checkAll = document.getElementById('checkAll');
+
+    // --- Modal refs ---
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const form = document.getElementById('form');
+    const id = document.getElementById('id');
+    const title = document.getElementById('title');
+    const category = document.getElementById('category');
+    const statusSel = document.getElementById('status');
+    const cover = document.getElementById('cover');
+    const tags = document.getElementById('tags');
+    const content = document.getElementById('content');
+
+    // --- Preview refs ---
+    const preview = document.getElementById('preview');
+    const previewTitle = document.getElementById('previewTitle');
+    const previewMeta = document.getElementById('previewMeta');
+    const previewContent = document.getElementById('previewContent');
+    const previewCover = document.getElementById('previewCover');
+
+    // --- Helpers ---
+    const fmtDate = (iso)=> new Date(iso).toLocaleString('id-ID', { dateStyle:'medium', timeStyle:'short' })
+    const badge = (st)=> st==='published'?'<span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Terbit</span>':(st==='draft'?'<span class="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Draft</span>':'<span class="px-2 py-0.5 rounded-full text-xs bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">Arsip</span>')
+
+    function applyFilters(list){
+      const term = q.value.trim().toLowerCase();
+      return list.filter(a=>{
+        const okQ = !term || a.title.toLowerCase().includes(term) || a.content.toLowerCase().includes(term)
+        const okS = !statusFilter.value || a.status === statusFilter.value
+        const okC = !categoryFilter.value || a.category === categoryFilter.value
+        return okQ && okS && okC
+      })
+    }
+
+    function render(){
+      const filtered = applyFilters(state.articles)
+      const total = filtered.length
+      const pages = Math.max(1, Math.ceil(total / perPage))
+      page = Math.min(page, pages)
+      const start = (page-1)*perPage
+      const current = filtered.slice(start, start+perPage)
+
+      rows.innerHTML = current.map(a=>`
+        <tr class="border-b border-slate-100 dark:border-slate-800">
+          <td class="py-3 px-4"><input type="checkbox" data-id="${a.id}" class="rowCheck w-4 h-4"></td>
+          <td class="py-3 pr-4">
+            <div class="font-medium">${a.title}</div>
+            <div class="text-xs text-slate-500">${a.tags.map(t=>`#${t}`).join(' ')}</div>
+          </td>
+          <td class="py-3 pr-4">${a.category}</td>
+          <td class="py-3 pr-4">${a.author}</td>
+          <td class="py-3 pr-4">${fmtDate(a.updatedAt)}</td>
+          <td class="py-3 pr-4">${badge(a.status)}</td>
+          <td class="py-3 pr-4 text-right space-x-2">
+            <button class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-xs" data-edit="${a.id}">Edit</button>
+            <button class="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-xs" data-preview="${a.id}">Preview</button>
+            <button class="px-2 py-1 rounded-lg border border-red-200 dark:border-red-900/40 text-red-600 text-xs" data-del="${a.id}">Hapus</button>
+          </td>
+        </tr>`).join('')
+
+      meta.textContent = `Menampilkan ${current.length} dari ${total} berita`
+      pageInfo.textContent = `Hal. ${page}/${pages}`
+      prevBtn.disabled = page<=1; nextBtn.disabled = page>=pages
+      checkAll.checked = false
+    }
+
+    // Initial
+    render()
+
+    // Filters events
+    q.addEventListener('input', ()=>{ page=1; render() })
+    statusFilter.addEventListener('change', ()=>{ page=1; render() })
+    categoryFilter.addEventListener('change', ()=>{ page=1; render() })
+
+    prevBtn.addEventListener('click', ()=>{ if(page>1){ page--; render() } })
+    nextBtn.addEventListener('click', ()=>{ page++; render() })
+
+    // Bulk actions
+    const selectedIds = ()=> Array.from(document.querySelectorAll('.rowCheck:checked')).map(c=>c.dataset.id)
+    checkAll.addEventListener('change', ()=>{
+      document.querySelectorAll('.rowCheck').forEach(c=>c.checked = checkAll.checked)
+    })
+    document.getElementById('bulkPublish').addEventListener('click',()=>{ selectedIds().forEach(id=>{ const a=state.articles.find(x=>x.id===id); if(a){ a.status='published'; a.updatedAt=new Date().toISOString() } }); save(); render() })
+    document.getElementById('bulkArchive').addEventListener('click',()=>{ selectedIds().forEach(id=>{ const a=state.articles.find(x=>x.id===id); if(a){ a.status='archived'; a.updatedAt=new Date().toISOString() } }); save(); render() })
+    document.getElementById('bulkDelete').addEventListener('click',()=>{ const ids=selectedIds(); if(!ids.length) return; state.articles = state.articles.filter(a=>!ids.includes(a.id)); save(); render() })
+
+    // Open create
+    document.getElementById('openCreate').addEventListener('click',()=>{
+      modalTitle.textContent = 'Tulis Berita'; form.reset(); id.value=''; content.innerHTML='<p>Tulis isi berita di sini…</p>'; modal.classList.remove('hidden')
+    })
+
+    // Row actions (edit/preview/delete)
+    rows.addEventListener('click', (e)=>{
+      const editId = e.target.dataset.edit; const delId = e.target.dataset.del; const prevId = e.target.dataset.preview
+      if(editId){
+        const a = state.articles.find(x=>x.id===editId)
+        if(!a) return
+        id.value = a.id; title.value = a.title; category.value = a.category; statusSel.value = a.status; tags.value = a.tags.join(', '); content.innerHTML = a.content || ''
+        modalTitle.textContent = 'Edit Berita'; modal.classList.remove('hidden')
+      }
+      if(delId){
+        if(confirm('Hapus berita ini?')){ state.articles = state.articles.filter(x=>x.id!==delId); save(); render() }
+      }
+      if(prevId){ showPreview(state.articles.find(x=>x.id===prevId)) }
+    })
+
+    // File cover preview handling (base64 store)
+    let coverData = ''
+    cover.addEventListener('change', (e)=>{
+      const file = e.target.files?.[0]; if(!file) return; const reader = new FileReader(); reader.onload = ()=> coverData = reader.result; reader.readAsDataURL(file)
+    })
+
+    // Submit create/update
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault()
+      const payload = {
+        id: id.value || uid(),
+        title: title.value.trim(),
+        category: category.value,
+        status: statusSel.value,
+        author: 'Admin',
+        tags: tags.value.split(',').map(s=>s.trim()).filter(Boolean),
+        content: content.innerHTML.trim(),
+        cover: coverData || (state.articles.find(x=>x.id===id.value)?.cover || ''),
+        updatedAt: new Date().toISOString()
+      }
+      const exists = state.articles.findIndex(a=>a.id===payload.id)
+      if(exists>=0) state.articles[exists] = payload; else state.articles.unshift(payload)
+      save(); modal.classList.add('hidden'); render(); coverData=''
+    })
+
+    // Modal / preview close
+    document.querySelectorAll('[data-close]').forEach(el=> el.addEventListener('click', ()=> el.closest('#modal, #preview').classList.add('hidden')))
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) modal.classList.add('hidden') })
+
+    // Preview
+    document.getElementById('previewBtn').addEventListener('click',()=>{
+      const tmp = { title: title.value || '(Tanpa judul)', category: category.value, author:'Admin', updatedAt:new Date().toISOString(), content: content.innerHTML, cover: coverData }
+      showPreview(tmp)
+    })
+    function showPreview(a){ if(!a) return; previewTitle.textContent = a.title; previewMeta.textContent = `${a.category} • ${a.author} • ${fmtDate(a.updatedAt)}`; previewContent.innerHTML = a.content || ''; if(a.cover){ previewCover.src = a.cover; previewCover.classList.remove('hidden') } else { previewCover.src=''; previewCover.classList.add('hidden') } preview.classList.remove('hidden') }
+  </script>
+</body>
+</html>

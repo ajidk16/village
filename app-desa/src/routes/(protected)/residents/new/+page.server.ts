@@ -34,10 +34,9 @@ export const actions: Actions = {
 				body: parsed.data,
 				token: locals.token
 			});
-		} catch (err) {
-			console.log(err);
+		} catch (err: unknown) {
 			if (err instanceof HttpError && err.status === 500) {
-				return fail(500, { errors: { nik: 'NIK sudah terdaftar' }, values: err });
+				return fail(500, { errors: { nik: 'NIK sudah terdaftar' }, values: raw });
 			}
 			return fail(400, { errors: { form: 'Gagal memperbarui. Coba lagi.' }, values: raw });
 		}

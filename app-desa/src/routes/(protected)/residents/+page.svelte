@@ -5,6 +5,7 @@
 	import { toast } from '$lib/stores/toast.js';
 
 	export let data;
+	const isAdmin = data.user?.role === 'admin';
 
 	const agama = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
 	const limit = [10, 25, 50, 100];
@@ -79,6 +80,7 @@
 		if (t === 'deleted') toast.success('Data berhasil dihapus');
 		if (t === 'saved') toast.success('Data berhasil disimpan');
 		if (t === 'updated') toast.success('Data berhasil diperbarui');
+		if (t === 'imported') toast.success('Import berhasil');
 	});
 
 	function confirmDelete(e: Event, nama: string) {
@@ -86,17 +88,51 @@
 			e.preventDefault();
 		}
 	}
+
+	let selected: number[] = [];
+	function toggle(id: number, checked: boolean) {
+		selected = checked ? [...new Set([...selected, id])] : selected.filter((x) => x !== id);
+	}
+	function toggleAll(checked: boolean) {
+		selected = checked ? data.items.map((r: any) => r.id) : [];
+	}
+	function allChecked() {
+		return data.items.length > 0 && selected.length === data.items.length;
+	}
+	function confirmBulkDelete(e: Event) {
+		if (!confirm(`Hapus ${selected.length} data terpilih?`)) e.preventDefault();
+	}
 </script>
 
 <h1 class="mb-4 text-2xl font-semibold">Residents</h1>
-<div class="mb-3">
+<div class="mb-3 flex items-center gap-2">
 	<a
 		href="/residents/new"
 		class="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-white"
 	>
 		+ Tambah Penduduk
 	</a>
+	<a href="/residents/import" class="inline-flex items-center gap-2 rounded-lg border px-4 py-2">
+		Import CSV/Excel
+	</a>
 </div>
+
+<!-- bulk bar -->
+{#if isAdmin && selected.length > 0}
+	<form
+		method="POST"
+		action="?/delete-many"
+		class="mb-3 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2"
+	>
+		{#each selected as id}
+			<input type="hidden" name="ids" value={id} />
+		{/each}
+		<div class="text-sm">Terpilih: <strong>{selected.length}</strong></div>
+		<button class="rounded bg-red-600 px-3 py-1 text-white" on:click={confirmBulkDelete}>
+			Hapus Terpilih
+		</button>
+	</form>
+{/if}
 
 <!-- Toolbar: Search + Filters + Page size -->
 <form method="GET" class="mb-4 grid gap-3 rounded-xl bg-white p-4 shadow md:grid-cols-6">
@@ -153,6 +189,15 @@
 	<table class="min-w-full text-sm">
 		<thead class="bg-gray-50 text-gray-700">
 			<tr>
+				<th class="px-3 py-2 text-left">
+					{#if isAdmin}
+						<input
+							type="checkbox"
+							checked={allChecked()}
+							on:change={(e) => toggleAll((e.target as HTMLInputElement).checked)}
+						/>
+					{/if}
+				</th>
 				<th class="px-3 py-2 text-left">#</th>
 				<th class="cursor-pointer px-3 py-2 text-left" on:click={() => sortBy('nik')}>
 					NIK {sort0 === 'nik' ? (order0 === 'asc' ? '↑' : '↓') : ''}
@@ -184,6 +229,15 @@
 			{:else}
 				{#each data?.items as r, i}
 					<tr class="border-t">
+						<td class="px-3 py-2">
+							{#if isAdmin}
+								<input
+									type="checkbox"
+									checked={selected.includes(r.id)}
+									on:change={(e) => toggle(r.id, (e.target as HTMLInputElement).checked)}
+								/>
+							{/if}
+						</td>
 						<td class="px-3 py-2">{(data?.page - 1) * data?.limit + i + 1}</td>
 						<td class="px-3 py-2 font-mono">{r.nik}</td>
 						<td class="px-3 py-2">{r.nama}</td>

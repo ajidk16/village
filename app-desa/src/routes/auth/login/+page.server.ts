@@ -4,8 +4,9 @@ import { fail, redirect } from '@sveltejs/kit';
 import { PUBLIC_JWT_COOKIE_NAME } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	if (locals.user) throw redirect(302, '/dashboard');
-	return {};
+	// if (locals.user) throw redirect(302, '/dashboard');
+	return locals;
+	// return {};
 };
 
 export const actions: Actions = {

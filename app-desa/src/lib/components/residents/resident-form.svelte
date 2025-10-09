@@ -1,5 +1,5 @@
 <script lang="ts">
-	import HouseholdSelect from './household-select.svelte';
+	import HouseholdSelect from "./household-select.svelte";
 
 	export let values: Record<string, unknown> = {};
 	export let errors: Record<string, string> = {};
@@ -100,7 +100,8 @@
 			class="w-full rounded border-gray-300"
 			value={values.household_id ?? ''}
 		/> -->
-		<HouseholdSelect name="household_id" value={String(values.household_id) ?? null} />
+
+		<HouseholdSelect name="household_id" value={String(values.household_id)} />
 		{#if errors.household_id}<p class="mt-1 text-xs text-red-600">{errors.household_id}</p>{/if}
 	</div>
 </div>
