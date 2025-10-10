@@ -67,6 +67,7 @@ export async function listResidents(query: {
       rt: households.rt,
       rw: households.rw,
       dusun: households.dusun,
+      status: residents.status_kawin,
       createdAt: residents.createdAt,
     })
     .from(residents)

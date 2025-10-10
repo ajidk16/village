@@ -24,12 +24,11 @@ type ResidentsResponse =
 	| Resident[];
 
 export const load: PageServerLoad = async ({ url, fetch }) => {
-	// forward semua query apa adanya
 	const qs = url.searchParams.toString();
 	const path = `/residents${qs ? `?${qs}` : ''}`;
 
 	let page = Number(url.searchParams.get('page') || 1);
-	let limit = Number(url.searchParams.get('limit') || 10);
+	let limit = Number(url.searchParams.get('limit') || 5);
 
 	try {
 		const res = (await api(path, { fetchImpl: fetch })) as ResidentsResponse;

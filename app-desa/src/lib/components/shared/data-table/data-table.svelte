@@ -20,6 +20,7 @@
 	import { ChevronDown, ChevronUp, Search } from '@lucide/svelte';
 
 	import { createEventDispatcher, onMount } from 'svelte';
+	import { debounce } from 'chart.js/helpers';
 	export let data: any[] = [];
 	export let columns: Column[] = [];
 	export let pageSizeOptions: number[] = [10, 25, 50];
@@ -29,6 +30,7 @@
 	export let stickyHeader = true;
 	export let searchable = true;
 	export let selectable = false;
+	export let total: number = 0;
 
 	const dispatch = createEventDispatcher();
 
@@ -75,7 +77,7 @@
 					const res = cmp(aa, bb);
 					return sortDir === 'asc' ? res : -res;
 				});
-	$: total = sorted.length;
+	$: total = serverMode ? total : sorted.length;
 	$: pageStart = (page - 1) * pageSize;
 	$: pageEnd = Math.min(pageStart + pageSize, total);
 	$: pageRows = serverMode ? data : sorted.slice(pageStart, pageEnd);
@@ -109,9 +111,23 @@
 		page = 1;
 		if (serverMode) dispatch('page', { page, pageSize });
 	}
+
+	const debouncedSearch = debounce(() => {
+		dispatch('search', { q });
+		// Reset halaman ke 1 saat pencarian
+		page = 1;
+		dispatch('page', { page, pageSize });
+	}, 300);
+
+	function onSearchInput(e: Event) {
+		q = (e.target as HTMLInputElement).value;
+		debouncedSearch();
+	}
+
 	function resetToFirst() {
 		page = 1;
 		if (serverMode) dispatch('page', { page, pageSize });
+		dispatch('search', { q });
 	}
 
 	// Selection
@@ -144,15 +160,15 @@
 >
 	<!-- Toolbar -->
 	<div
-		class="flex flex-col justify-start items-start gap-4 border-b border-slate-300 px-4 py-3 md:flex-row md:justify-between dark:border-slate-800"
+		class="flex flex-col items-start justify-start gap-4 border-b border-slate-300 px-4 py-3 md:flex-row md:justify-between dark:border-slate-800"
 	>
 		{#if searchable}
 			<label class="flex items-center gap-x-2 rounded-xl border border-slate-300 pr-3 outline-none">
 				<input
 					type="text"
-					placeholder="Cari…"
+					placeholder="Cari..."
 					bind:value={q}
-					on:input={resetToFirst}
+					on:input={onSearchInput}
 					class="w-64 rounded-xl border border-none bg-white py-1.5 outline-none active:outline-none dark:border-slate-700 dark:bg-slate-800"
 				/>
 				<Search size={16} />

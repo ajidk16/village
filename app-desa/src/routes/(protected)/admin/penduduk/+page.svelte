@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+
 	import Badge from '$lib/components/shared/badge/badge.svelte';
 	import Button from '$lib/components/shared/button/button.svelte';
 	import Card from '$lib/components/shared/card/card.svelte';
@@ -12,8 +15,24 @@
 	import type { Field } from '$lib/components/shared/input-generator/input-generator.svelte';
 	import InputGenerator from '$lib/components/shared/input-generator/input-generator.svelte';
 	import Modal from '$lib/components/shared/modal/modal.svelte';
+	import { onMount } from 'svelte';
 
 	export let data;
+
+	const params = new URLSearchParams(page.url.search);
+
+	onMount(() => {
+		console.log('page test', data);
+		if (!params.has('page')) {
+			params.set('page', '1');
+		}
+		if (!params.has('limit')) {
+			params.set('limit', '5');
+		}
+		if (params.has('page') || params.has('limit')) {
+			goto(`?${params.toString()}`, { replaceState: true });
+		}
+	});
 
 	// --- FILTERS ---
 	let filter = {};
@@ -190,18 +209,32 @@
 
 	function onSort(e: CustomEvent) {
 		const { sortBy, sortDir } = e.detail; // lakukan fetch ke server jika serverMode=true
-		// console.log('sort:', sortBy, sortDir);
+		params.set('sort', sortBy ?? '');
+		params.set('order', sortDir);
+
+		goto(`?${params.toString()}`, { noScroll: true });
 	}
 	function onPage(e: CustomEvent) {
 		const { page, pageSize } = e.detail; // lakukan fetch ke server jika serverMode=true
-		// console.log('page:', page, pageSize);
+		params.set('limit', String(pageSize));
+		params.set('page', String(page));
+
+		goto(`?${params.toString()}`, { noScroll: true });
 	}
 
 	let selected: number[] = [];
+
 	function onSelect(e: CustomEvent) {
 		selected = Array.isArray(e.detail.ids) ? e.detail.ids.map(Number) : [Number(e.detail.ids)];
-		// console.log('selected ids:', selected);
+		console.log('selected ids:', selected);
 	}
+
+	const onSearch = (e: CustomEvent) => {
+		const { q } = e.detail;
+		params.set('q', q ?? '');
+		params.set('page', '1'); // reset ke halaman 1 saat cari
+		goto(`?${params.toString()}`, { noScroll: true });
+	};
 
 	let showDrawer = false;
 	let detail: any = null;
@@ -440,9 +473,11 @@
 		stickyHeader
 		serverMode={true}
 		pageSizeOptions={[5, 10, 25]}
+		total={data.total}
 		on:sort={onSort}
 		on:page={onPage}
 		on:select={onSelect}
+		on:search={onSearch}
 	/>
 </main>
 
