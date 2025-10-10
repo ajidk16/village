@@ -1,13 +1,13 @@
-import { db } from "../../db/client";
+import { db } from "@/db/client";
 import {
   households,
   letterCounters,
   letterRequests,
   letterTemplates,
   residents,
-} from "../../db/schema";
+} from "@/db/schema";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { formatNomor, renderTemplate } from "../../utils/numbering";
+import { formatNomor, renderTemplate } from "@/utils/numbering";
 
 export async function createTemplate(input: {
   code: string;

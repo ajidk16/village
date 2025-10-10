@@ -6,7 +6,7 @@ import {
   signAccessToken,
 } from "./service";
 
-import { requireAuth, requireRole, type UserContext } from "../../utils/rbac";
+import { requireAuth, requireRole, type UserContext } from "@/utils/rbac";
 import { loginBody, registerBody } from "./schema";
 
 export const authRoutes = new Elysia({ prefix: "/auth" })

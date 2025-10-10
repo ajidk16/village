@@ -1,20 +1,19 @@
 <script lang="ts">
-	import ActionCell from '$lib/components/admin/penduduk/action-cell.svelte';
+	import Badge from '$lib/components/shared/badge/badge.svelte';
 	import Button from '$lib/components/shared/button/button.svelte';
 	import Card from '$lib/components/shared/card/card.svelte';
 	import AksiCell from '$lib/components/shared/data-table/aksi-cell.svelte';
-	import DataTableDemo from '$lib/components/shared/data-table/data-table-demo.svelte';
 	import type {
 		AnySvelteComponent,
 		Column
 	} from '$lib/components/shared/data-table/data-table.svelte';
 	import DataTable from '$lib/components/shared/data-table/data-table.svelte';
-	import DrawerDemo from '$lib/components/shared/drawer/drawer-demo.svelte';
-	import DropdownDemo from '$lib/components/shared/dropdown/dropdown-demo.svelte';
+	import Drawer from '$lib/components/shared/drawer/Drawer.svelte';
 	import type { Field } from '$lib/components/shared/input-generator/input-generator.svelte';
 	import InputGenerator from '$lib/components/shared/input-generator/input-generator.svelte';
-	import ModalDemo from '$lib/components/shared/modal/modal-demo.svelte';
-	import type { SvelteComponent } from 'svelte';
+	import Modal from '$lib/components/shared/modal/modal.svelte';
+
+	export let data;
 
 	// --- FILTERS ---
 	let filter = {};
@@ -102,22 +101,78 @@
 		nama: string;
 		jk: string;
 		tempat_lahir: string;
+		tgl_lahir: string;
 		usia: string;
 		dusun: string;
 		status: string;
 		pekerjaan: string;
 		rt_rw: string;
 	};
+
+	type InputPendidikan = {
+		nik: string;
+		nama: string;
+		jk: string;
+		agama: string;
+		pendidikan: string;
+		pekerjaan: string;
+		tempat_lahir: string;
+		tgl_lahir: string;
+		status: string;
+		alamat_domisili: string;
+		household_id: string;
+	};
+
 	const columns: Column<Row>[] = [
-		{ key: 'nik', header: 'NIK', sortable: true },
-		{ key: 'nama', header: 'Nama', sortable: true },
-		{ key: 'jk', header: 'Jenis Kelamin', sortable: true, align: 'center' },
-		{ key: 'tempat_lahir', header: 'Tempat Lahir', sortable: true },
-		{ key: 'usia', header: 'Usia', sortable: true, align: 'center' },
-		{ key: 'dusun', header: 'Dusun', sortable: true },
-		{ key: 'rt_rw', header: 'RT/RW', sortable: true, align: 'center' },
-		{ key: 'pekerjaan', header: 'Pekerjaan', sortable: true },
-		{ key: 'status', header: 'Status Kawin', sortable: true },
+		{
+			key: 'nik',
+			header: 'NIK',
+			sortable: true
+		},
+		{
+			key: 'nama',
+			header: 'Nama',
+			sortable: true
+		},
+		{
+			key: 'jk',
+			header: 'Jenis Kelamin',
+			sortable: true,
+			align: 'center'
+		},
+		{
+			key: 'tempat_lahir',
+			header: 'Tempat Lahir',
+			sortable: true,
+			render: (val) => (val ? val.tempat_lahir : '-')
+		},
+		{
+			key: 'usia',
+			header: 'Usia',
+			sortable: true,
+			align: 'center'
+		},
+		{
+			key: 'dusun',
+			header: 'Dusun',
+			sortable: true
+		},
+		{
+			key: 'rt_rw',
+			header: 'RT/RW',
+			sortable: true,
+			align: 'center'
+		},
+		{
+			key: 'pekerjaan',
+			header: 'Pekerjaan',
+			sortable: true
+		},
+		{
+			key: 'status',
+			header: 'Status Kawin',
+			sortable: true
+		},
 		{
 			key: 'aksi',
 			header: 'Aksi',
@@ -125,130 +180,326 @@
 			visible: true,
 			component: AksiCell as unknown as AnySvelteComponent,
 			componentProps: (row) => ({
-				onEdit: () => console.log('raaawww', row),
-				onDelete: () => console.log('delete', row)
+				edit: true,
+				onEdit: () => openEdit(row.id),
+				remove: true,
+				onDelete: () => deleteRow(Number(row.id))
 			})
 		}
 	];
 
-	let data: Row[] = [
-		{
-			id: '1',
-			nik: '1234567890123456',
-			nama: 'Andi',
-			jk: 'L',
-			tempat_lahir: 'Jakarta',
-			usia: '30',
-			dusun: '001',
-			status: 'Kawin',
-			pekerjaan: 'Karyawan',
-			rt_rw: '001/002'
-		},
-		{
-			id: '2',
-			nik: '2345678901234567',
-			nama: 'Siti',
-			jk: 'P',
-			tempat_lahir: 'Bandung',
-			usia: '25',
-			dusun: '002',
-			status: 'Belum Kawin',
-			pekerjaan: 'Mahasiswa',
-			rt_rw: '002/003'
-		},
-		{
-			id: '3',
-			nik: '3456789012345678',
-			nama: 'Budi',
-			jk: 'L',
-			tempat_lahir: 'Surabaya',
-			usia: '40',
-			dusun: '001',
-			status: 'Kawin',
-			pekerjaan: 'Wiraswasta',
-			rt_rw: '001/002'
-		},
-		{
-			id: '4',
-			nik: '4567890123456789',
-			nama: 'Rina',
-			jk: 'P',
-			tempat_lahir: 'Medan',
-			usia: '35',
-			dusun: '003',
-			status: 'Kawin',
-			pekerjaan: 'PNS',
-			rt_rw: '003/004'
-		},
-		{
-			id: '5',
-			nik: '5678901234567890',
-			nama: 'Agus',
-			jk: 'L',
-			tempat_lahir: 'Yogyakarta',
-			usia: '28',
-			dusun: '002',
-			status: 'Belum Kawin',
-			pekerjaan: 'Freelancer',
-			rt_rw: '002/003'
-		},
-		{
-			id: '6',
-			nik: '6789012345678901',
-			nama: 'Dewi',
-			jk: 'P',
-			tempat_lahir: 'Semarang',
-			usia: '32',
-			dusun: '001',
-			status: 'Kawin',
-			pekerjaan: 'Guru',
-			rt_rw: '001/002'
-		}
-	]; // data dari server
-
 	function onSort(e: CustomEvent) {
 		const { sortBy, sortDir } = e.detail; // lakukan fetch ke server jika serverMode=true
-		console.log('sort:', sortBy, sortDir);
+		// console.log('sort:', sortBy, sortDir);
 	}
 	function onPage(e: CustomEvent) {
 		const { page, pageSize } = e.detail; // lakukan fetch ke server jika serverMode=true
-		console.log('page:', page, pageSize);
+		// console.log('page:', page, pageSize);
 	}
+
+	let selected: number[] = [];
 	function onSelect(e: CustomEvent) {
-		console.log('selected ids:', e.detail.ids);
+		selected = Array.isArray(e.detail.ids) ? e.detail.ids.map(Number) : [Number(e.detail.ids)];
+		// console.log('selected ids:', selected);
 	}
+
+	let showDrawer = false;
+	let detail: any = null;
+	function openDetail(id: number) {
+		detail = data.items.find((x) => x.id === id) ?? null;
+		showDrawer = !!detail;
+	}
+
+	// MODAL FORM (CREATE/EDIT)
+	let showModal = false;
+	let editId: string | null = null;
+	let form: InputPendidikan = {
+		nik: '',
+		nama: '',
+		jk: '',
+		agama: '',
+		pendidikan: '',
+		pekerjaan: '',
+		tempat_lahir: '',
+		tgl_lahir: '',
+		status: '',
+		alamat_domisili: '',
+		household_id: ''
+	};
+	function newRow() {
+		editId = null;
+		form = {
+			nik: '',
+			nama: '',
+			jk: '',
+			agama: '',
+			pendidikan: '',
+			pekerjaan: '',
+			tempat_lahir: '',
+			tgl_lahir: '',
+			status: '',
+			alamat_domisili: '',
+			household_id: ''
+		};
+		showModal = true;
+	}
+	function openEdit(id: string) {
+		const r = data.items.find((x) => x.id === Number(id));
+		if (!r) return;
+		editId = id;
+		form = {
+			nik: r.nik ?? '',
+			nama: r.nama ?? '',
+			jk: r.jk ?? '',
+			agama: r.agama?.toLowerCase() ?? '',
+			pendidikan: r.pendidikan?.toLowerCase() ?? '',
+			pekerjaan: r.pekerjaan?.toLowerCase() ?? '',
+			tempat_lahir: r.tempat_lahir ?? '',
+			tgl_lahir: r.tgl_lahir ?? '',
+			status: r.status?.toLowerCase() ?? '',
+			alamat_domisili: r.alamat_domisili ?? '',
+			household_id: String(r.household_id) ?? ''
+		};
+		showModal = true;
+	}
+	function submitForm() {
+		// if (!form.pemohon || !form.jenis || !form.tanggal) return;
+		// if (editId) {
+		// 	data.items = data.items.map((x) => (x.id === editId ? { ...x, ...form, id: editId } : x));
+		// } else {
+		// 	const nextNum = Math.max(...data.items.map((d) => Number(d.id.split('-')[1] || 0))) + 1;
+		// 	const nid = `A-${nextNum}`;
+		// 	data.items = [{ ...form, id: nid, catatan: form.catatan || '' }, ...data.items];
+		// }
+		showModal = false;
+		// toast('Tersimpan!');
+	}
+	function deleteRow(id: number) {
+		data.items = data.items.filter((x) => x.id !== id);
+		// console.log('Dihapus 1 data.items', id);
+		// toast('Dihapus 1 data.items');
+		showDrawer = false;
+	}
+
+	const fieldInput: Field[] = [
+		{
+			name: 'nik',
+			label: 'NIK',
+			required: true,
+			placeholder: 'Masukkan NIK 16 digit'
+		},
+		{
+			name: 'nama',
+			label: 'Nama Lengkap',
+			required: true,
+			placeholder: 'Masukkan nama lengkap'
+		},
+		{
+			name: 'jk',
+			label: 'Jenis Kelamin',
+			type: 'select',
+			placeholder: 'Pilih jenis kelamin',
+			options: [
+				{ value: 'M', label: 'Laki-laki' },
+				{ value: 'F', label: 'Perempuan' }
+			]
+		},
+		{
+			name: 'agama',
+			label: 'Agama',
+			type: 'select',
+			placeholder: 'Pilih agama',
+			options: [
+				{ value: 'islam', label: 'Islam' },
+				{ value: 'kristen', label: 'Kristen' },
+				{ value: 'katolik', label: 'Katolik' },
+				{ value: 'hindu', label: 'Hindu' },
+				{ value: 'buddha', label: 'Buddha' },
+				{ value: 'lainnya', label: 'Lainnya' }
+			]
+		},
+		{
+			name: 'pendidikan',
+			label: 'Pendidikan',
+			type: 'select',
+			placeholder: 'Pilih pendidikan',
+			options: [
+				{ value: 'sd', label: 'SD' },
+				{ value: 'smp', label: 'SMP' },
+				{ value: 'sma', label: 'SMA' },
+				{ value: 'diploma', label: 'Diploma' },
+				{ value: 'sarjana', label: 'Sarjana' },
+				{ value: 'lainnya', label: 'Lainnya' }
+			]
+		},
+		{
+			name: 'pekerjaan',
+			label: 'Pekerjaan',
+			placeholder: 'Masukkan pekerjaan',
+			type: 'select',
+			options: [
+				{ value: 'karyawan', label: 'Karyawan' },
+				{ value: 'wiraswasta', label: 'Wiraswasta' },
+				{ value: 'pns', label: 'PNS' },
+				{ value: 'guru', label: 'Guru' },
+				{ value: 'mahasiswa', label: 'Mahasiswa' },
+				{ value: 'lainnya', label: 'Lainnya' }
+			]
+		},
+		{
+			name: 'tempat_lahir',
+			label: 'Tempat Lahir',
+			placeholder: 'Masukkan tempat lahir',
+			type: 'text'
+		},
+		{
+			name: 'tanggal_lahir',
+			label: 'Tanggal Lahir',
+			type: 'date'
+		},
+		{
+			name: 'status_kawin',
+			label: 'Status Kawin',
+			type: 'select',
+			placeholder: 'Pilih status kawin',
+			options: [
+				{ value: 'kawin', label: 'Kawin' },
+				{ value: 'belum_kawin', label: 'Belum Kawin' },
+				{ value: 'cerai_hidup', label: 'Cerai Hidup' },
+				{ value: 'cerai_mati', label: 'Cerai Mati' }
+			]
+		},
+		{
+			name: 'household_id',
+			label: 'ID Keluarga',
+			placeholder: 'Masukkan ID Keluarga',
+			type: 'select',
+			options: [
+				{ value: '001', label: '001' },
+				{ value: '002', label: '002' },
+				{ value: '003', label: '003' }
+			]
+		},
+		{
+			name: 'alamat_domisili',
+			label: 'Alamat',
+			placeholder: 'Masukkan alamat_domisili',
+			type: 'textarea',
+			colspan: 2
+		}
+	];
 </script>
 
 <main>
-	<!-- <DrawerDemo />
-	<DropdownDemo />
-	<ModalDemo /> -->
 	<!-- Filters & bulk actions -->
-	<Card title="Filters & Bulk Actions" className="mb-6">
-		<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-			<InputGenerator fields={filterConfig} bind:data={filter} onChange={handleUpdate} />
-		</div>
-		<div class="mt-3 flex flex-wrap gap-2">
-			<Button>Terapkan</Button>
-			<Button type="button" variant="outline">Reset</Button>
+	<Card title="Filters & Bulk Actions" className="mb-4 sm:mb-6">
+		<div class="space-y-4">
+			<!-- Filter Form - Responsive Grid -->
+			<InputGenerator
+				fields={filterConfig}
+				bind:data={filter}
+				onChange={handleUpdate}
+				columns={3}
+			/>
 
-			<div class="ml-auto flex gap-2">
-				<Button type="button" variant="outline">Import CSV</Button>
-				<Button>Export CSV</Button>
-				<Button type="button" variant="danger">Hapus Terpilih</Button>
+			<!-- Action Buttons - Responsive Layout -->
+			<div
+				class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0"
+			>
+				<!-- Filter Actions -->
+				<div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+					<Button className="w-full sm:w-auto">Terapkan</Button>
+					<Button type="button" variant="outline" className="w-full sm:w-auto">Reset</Button>
+				</div>
+
+				<!-- Bulk Actions -->
+				<div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+					<Button type="button" variant="outline" className="w-full sm:w-auto">Import CSV</Button>
+					<Button className="w-full sm:w-auto">Export CSV</Button>
+				</div>
 			</div>
+		</div>
+	</Card>
+
+	<Card className="mb-6">
+		<div class="flex justify-between">
+			<Button onClick={() => (showModal = true)}>Tambah Penduduk</Button>
+			{#if selected.length > 0}
+				<Button type="button" variant="danger" className="w-full sm:w-auto"
+					>Hapus Terpilih ({selected.length})</Button
+				>
+			{/if}
 		</div>
 	</Card>
 
 	<DataTable
 		{columns}
-		{data}
+		data={data.items}
 		selectable
 		searchable
 		stickyHeader
+		serverMode={true}
 		pageSizeOptions={[5, 10, 25]}
 		on:sort={onSort}
 		on:page={onPage}
 		on:select={onSelect}
 	/>
 </main>
+
+<!-- Drawer Detail -->
+{#if showDrawer && detail}
+	<Drawer isOpen={showDrawer} onClose={() => (showDrawer = false)} title="Detail Penduduk">
+		<div class="mt-4 space-y-3 text-sm">
+			<div class="grid grid-cols-3 gap-2">
+				<div class="text-slate-500">ID</div>
+				<div class="col-span-2 font-medium">{detail.id}</div>
+				<div class="text-slate-500">Pemohon</div>
+				<div class="col-span-2">{detail.pemohon}</div>
+				<div class="text-slate-500">Jenis</div>
+				<div class="col-span-2">{detail.jenis}</div>
+				<div class="text-slate-500">Tanggal</div>
+				<div class="col-span-2">{detail.tanggal}</div>
+				<div class="text-slate-500">Status</div>
+				<div class="col-span-2">
+					<Badge variant="warning">{detail.status}</Badge>
+				</div>
+				<div class="text-slate-500">Catatan</div>
+				<div class="col-span-2">{detail.catatan || '-'}</div>
+			</div>
+			<div class="mt-4 flex gap-2">
+				<button
+					class="rounded-lg border border-slate-200 px-3 py-1.5 dark:border-slate-800"
+					on:click={() => openEdit(detail.id)}>Edit</button
+				>
+				<button
+					class="rounded-lg border border-rose-300 px-3 py-1.5 text-rose-600"
+					on:click={() => deleteRow(detail.id)}>Hapus</button
+				>
+			</div>
+		</div>
+	</Drawer>
+{/if}
+
+<!-- Modal Form -->
+{#if showModal}
+	<Modal
+		isOpen={showModal}
+		onClose={() => (showModal = false)}
+		title={editId ? 'Edit Penduduk' : 'Penduduk Baru'}
+	>
+		<form class="mt-4 grid grid-cols-1 gap-3 text-sm" on:submit|preventDefault={submitForm}>
+			<InputGenerator columns={2} fields={fieldInput} bind:data={form} />
+			<div class="mt-2 flex items-center justify-end gap-2">
+				<button
+					type="button"
+					on:click={() => (showModal = false)}
+					class="rounded-xl border border-slate-200 px-4 py-2 dark:border-slate-800">Batal</button
+				>
+				<button
+					type="submit"
+					class="rounded-xl bg-brand-600 px-4 py-2 text-white hover:bg-brand-700">Simpan</button
+				>
+			</div>
+		</form>
+	</Modal>
+{/if}

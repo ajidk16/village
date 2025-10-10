@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-	import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher } from 'svelte';
 
 	export let variant: Variant = 'neutral';
 	export let tone: Tone = 'soft';
@@ -73,7 +73,7 @@
 {#if href}
 	<a
 		{href}
-		class={`inline-flex items-center gap-1.5 font-medium ${sizeCls[size]} ${toneClass(tone, variant)} ${roundedFull ? 'rounded-full' : 'rounded-md'} ${className}`}
+		class={`inline-flex items-center gap-1.5 font-medium capitalize ${sizeCls[size]} ${toneClass(tone, variant)} ${roundedFull ? 'rounded-full' : 'rounded-md'} ${className}`}
 	>
 		<!-- slot icon kiri -->
 		<slot name="left" />
@@ -92,7 +92,7 @@
 	</a>
 {:else}
 	<span
-		class={`inline-flex items-center gap-1.5 font-medium ${sizeCls[size]} ${toneClass(tone, variant)} ${roundedFull ? 'rounded-full' : 'rounded-md'} ${className}`}
+		class={`inline-flex items-center gap-1.5 font-medium capitalize ${sizeCls[size]} ${toneClass(tone, variant)} ${roundedFull ? 'rounded-full' : 'rounded-md'} ${className}`}
 		role="status"
 	>
 		<slot name="left" />

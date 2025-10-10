@@ -1,12 +1,12 @@
-import { db } from "../../db/client";
-import { households } from "../../db/schema";
+import { db } from "@/db/client";
+import { households } from "@/db/schema";
 import { eq, ilike, and, SQL } from "drizzle-orm";
 import {
   buildOrderBy,
   buildWhere,
   countQuery,
   parseListQuery,
-} from "../../utils/query";
+} from "@/utils/query";
 
 export async function listHouseholds(query: {
   q?: string;

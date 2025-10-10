@@ -1,12 +1,12 @@
-import { db } from "../../db/client";
-import { households, residents } from "../../db/schema";
+import { db } from "@/db/client";
+import { households, residents } from "@/db/schema";
 import { eq, ilike, SQL } from "drizzle-orm";
 import {
   buildOrderBy,
   buildWhere,
   countQuery,
   parseListQuery,
-} from "../../utils/query";
+} from "@/utils/query";
 
 export async function listResidents(query: {
   q?: string;
@@ -47,7 +47,7 @@ export async function listResidents(query: {
   };
   const orderBy = buildOrderBy({
     sortKey,
-    orderDir: "desc",
+    orderDir,
     columns: sortColumns,
     defaultColumn: "id",
   });
@@ -63,6 +63,7 @@ export async function listResidents(query: {
       pekerjaan: residents.pekerjaan,
       pendidikan: residents.pendidikan,
       alamat_domisili: residents.alamat_domisili,
+      tempat_lahir: residents.tempat_lahir,
       rt: households.rt,
       rw: households.rw,
       dusun: households.dusun,

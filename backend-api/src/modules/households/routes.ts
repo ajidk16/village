@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { requireRole } from "../../utils/rbac";
+import { requireRole } from "@/utils/rbac";
 import { HouseholdCreate, HouseholdListQuery, HouseholdUpdate } from "./schema";
 import {
   createHousehold,

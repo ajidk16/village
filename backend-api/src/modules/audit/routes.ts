@@ -1,9 +1,9 @@
 import { Elysia, t } from "elysia";
-import { parseListQuery } from "../../utils/query";
-import { auditLogs } from "../../db/schema";
+import { parseListQuery } from "@/utils/query";
+import { auditLogs } from "@/db/schema";
 import { and, between, count, eq, ilike, sql } from "drizzle-orm";
-import { db } from "../../db/client";
-import { requireRole } from "../../utils/rbac";
+import { db } from "@/db/client";
+import { requireRole } from "@/utils/rbac";
 
 export const auditRoutes = new Elysia({ prefix: "/audit" }).get(
   "/",

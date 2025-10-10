@@ -1,5 +1,5 @@
-import { db } from "../../db/client";
-import { auditLogs } from "../../db/schema";
+import { db } from "@/db/client";
+import { auditLogs } from "@/db/schema";
 
 export async function writeAudit(entry: {
   userId?: number | null;

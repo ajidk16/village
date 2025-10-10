@@ -1,30 +1,30 @@
 import { Elysia } from "elysia";
 import { requireRole } from "@/utils/rbac";
-import { ResidentCreate, ResidentListQuery, ResidentUpdate } from "./schema";
+import { statusKawinCreate, statusKawinListQuery, statusKawinUpdate } from "./schema";
 import {
-  createResident,
-  deleteResident,
-  getResident,
-  listResidents,
-  updateResident,
+  createData,
+  deleteData,
+  dataById,
+  listData,
+  updateData,
 } from "./service";
 
-export const residentsRoutes = new Elysia({ prefix: "/residents" })
+export const statusKawinRoutes = new Elysia({ prefix: "/status-kawin" })
   .get(
     "/",
     async ({ query }) => {
-      const residents = await listResidents(query);
+      const residents = await listData(query);
       return residents;
     },
     {
       beforeHandle: [requireRole(["admin", "operator"]) as any],
-      query: ResidentListQuery,
+      query: statusKawinListQuery,
     }
   )
   .get(
     "/:id",
     async ({ params, set }) => {
-      const resident = await getResident(Number(params.id));
+      const resident = await dataById(Number(params.id));
       set.status = resident.status === 404 ? 404 : 200;
       return resident;
     },
@@ -35,27 +35,27 @@ export const residentsRoutes = new Elysia({ prefix: "/residents" })
   .post(
     "/",
     async ({ body, set }) => {
-      const created = await createResident(body);
+      const created = await createData(body);
       set.status = created.status === 500 ? 500 : 201;
       return created;
     },
-    { beforeHandle: [requireRole(["admin", "operator"])], body: ResidentCreate }
+    { beforeHandle: [requireRole(["admin", "operator"])], body: statusKawinCreate }
   )
   .put(
     "/:id",
     async ({ params, body, set }) => {
-      const updated = await updateResident(Number(params.id), body);
+      const updated = await updateData(Number(params.id), body);
 
       set.status = updated.status === 500 ? 500 : 200;
 
       return updated;
     },
-    { beforeHandle: [requireRole(["admin", "operator"])], body: ResidentUpdate }
+    { beforeHandle: [requireRole(["admin", "operator"])], body: statusKawinUpdate }
   )
   .delete(
     "/:id",
     async ({ params, set }) => {
-      const result = await deleteResident(Number(params.id));
+      const result = await deleteData(Number(params.id));
 
       set.status = result.status === 404 ? 404 : 200;
 

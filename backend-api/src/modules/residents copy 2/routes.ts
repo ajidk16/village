@@ -1,6 +1,6 @@
 // src/modules/residents/routes.ts
 import { Elysia, t } from "elysia";
-import { requireRole } from "../../utils/rbac";
+import { requireRole } from "@/utils/rbac";
 
 export const residentsRoutes = new Elysia({ prefix: "/residents" }).get(
   "/",

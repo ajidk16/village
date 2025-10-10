@@ -1,4 +1,6 @@
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
+import { get } from 'svelte/store';
+import { session } from './stores/session';
 
 export class HttpError extends Error {
 	status: number;
@@ -11,12 +13,13 @@ export class HttpError extends Error {
 type Options = {
 	method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 	body?: unknown;
-	token?: string | null;
 	fetchImpl?: typeof fetch; // untuk load() browser
 };
 
 export async function api(path: string, opts: Options = {}) {
-	const { method = 'GET', body, token, fetchImpl } = opts;
+	const { method = 'GET', body, fetchImpl } = opts;
+	const ambil = get(session);
+	console.log('ambil token', ambil);
 
 	const f = fetchImpl ?? fetch;
 
@@ -24,7 +27,7 @@ export async function api(path: string, opts: Options = {}) {
 		method,
 		headers: {
 			'Content-Type': 'application/json',
-			...(token ? { Authorization: `Bearer ${token}` } : {})
+			...(ambil ? { Authorization: `Bearer ${ambil?.token}` } : {})
 		},
 		body: body ? JSON.stringify(body) : undefined
 	});

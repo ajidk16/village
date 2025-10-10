@@ -1,9 +1,9 @@
 import { Elysia, t } from "elysia";
-import { parseListQuery } from "../../utils/query";
+import { parseListQuery } from "@/utils/query";
 import { and, desc, ilike, isNotNull, sql } from "drizzle-orm";
-import { announcements } from "../../db/schema";
-import { db } from "../../db/client";
-import { requireRole } from "../../utils/rbac";
+import { announcements } from "@/db/schema";
+import { db } from "@/db/client";
+import { requireRole } from "@/utils/rbac";
 
 export const announcementsRoutes = new Elysia({ prefix: "/announcements" })
   // list publik

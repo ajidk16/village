@@ -1,5 +1,5 @@
-import { db } from "../../db/client";
-import { users } from "../../db/schema";
+import { db } from "@/db/client";
+import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { SignJWT, jwtVerify } from "jose";
 import type { RegisterBody } from "./schema";

@@ -1,5 +1,6 @@
 import {
   pgTable,
+  boolean,
   serial,
   varchar,
   timestamp,
@@ -181,3 +182,31 @@ export const letterCounters = pgTable(
     ),
   })
 );
+
+// Tabel Agama
+export const agama = pgTable("agama", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 50 }).notNull(),
+  status: boolean("status").notNull().default(true),
+});
+
+// Tabel Pendidikan
+export const pendidikan = pgTable("pendidikan", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 50 }).notNull(),
+  status: boolean("status").notNull().default(true),
+});
+
+// Tabel Pekerjaan
+export const pekerjaan = pgTable("pekerjaan", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  status: boolean("status").notNull().default(true),
+});
+
+// Tabel Status Kawin
+export const statusKawin = pgTable("status_kawin", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 50 }).notNull(),
+  status: boolean("status").notNull().default(true),
+});

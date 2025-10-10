@@ -12,6 +12,7 @@
 	export let href: string | undefined = undefined;
 	export let type: 'button' | 'submit' | 'reset' = 'button';
 	export let onClick: (e: MouseEvent) => void = () => {};
+	export let className: string = '';
 
 	// Aksesibilitas
 	export let ariaLabel: string | undefined = undefined;
@@ -37,7 +38,7 @@
 	};
 
 	const sizes: Record<typeof size, string> = {
-		icon: 'p-1',
+		icon: 'w-8 h-8 p-0',
 		xs: 'text-xs px-2 py-1',
 		sm: 'text-sm px-3 py-1.5',
 		md: 'text-sm px-4 py-2',
@@ -59,7 +60,8 @@
 		roundings[rounded],
 		'cursor-pointer',
 		block && 'w-full',
-		loading && 'cursor-progress'
+		loading && 'cursor-progress',
+		className
 	);
 
 	// agar atribut HTML lain bisa diteruskan

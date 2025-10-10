@@ -1,8 +1,8 @@
 import { Elysia, t } from "elysia";
-import { requireRole } from "../../utils/rbac";
-import { parseCsv } from "../../utils/csv";
-import { db } from "../../db/client";
-import { households } from "../../db/schema";
+import { requireRole } from "@/utils/rbac";
+import { parseCsv } from "@/utils/csv";
+import { db } from "@/db/client";
+import { households } from "@/db/schema";
 
 export const householdsImportRoutes = new Elysia({
   prefix: "/households",

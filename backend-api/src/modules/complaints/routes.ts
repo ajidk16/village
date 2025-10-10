@@ -1,10 +1,10 @@
 import { Elysia, t } from "elysia";
-import { complaints } from "../../db/schema";
-import { db } from "../../db/client";
-import { requireRole, requireAuth } from "../../utils/rbac";
+import { complaints } from "@/db/schema";
+import { db } from "@/db/client";
+import { requireRole, requireAuth } from "@/utils/rbac";
 import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import type { Elysia as TElysia } from "elysia";
-import { parseListQuery } from "../../utils/query";
+import { parseListQuery } from "@/utils/query";
 
 // warga buat tiket; operator/admin ubah status
 export const complaintsRoutes = new Elysia({ prefix: "/complaints" as const })

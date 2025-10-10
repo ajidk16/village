@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { hashPassword } from "../../modules/auth/service";
+import { hashPassword } from "@/modules/auth/service";
 import { db } from "../client";
 import { users } from "../schema";
 

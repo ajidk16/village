@@ -143,7 +143,9 @@
 	class="rounded-2xl border border-slate-200 bg-white shadow-[0_12px_30px_-12px_rgba(0,0,0,.25)] dark:border-slate-800 dark:bg-slate-900"
 >
 	<!-- Toolbar -->
-	<div class="flex justify-between border-b border-slate-300 px-4 py-3 dark:border-slate-800">
+	<div
+		class="flex flex-col justify-start items-start gap-4 border-b border-slate-300 px-4 py-3 md:flex-row md:justify-between dark:border-slate-800"
+	>
 		{#if searchable}
 			<label class="flex items-center gap-x-2 rounded-xl border border-slate-300 pr-3 outline-none">
 				<input
@@ -157,7 +159,7 @@
 			</label>
 		{/if}
 
-		<div class="ml-auto flex items-center gap-2">
+		<div class="flex items-center gap-2">
 			<select
 				class="w-full rounded-lg border border-slate-300 bg-white py-1.5 sm:w-auto dark:border-slate-700 dark:bg-slate-800"
 				bind:value={pageSize}
@@ -187,8 +189,6 @@
 				</details>
 			</div>
 		</div>
-
-		<!-- Footer / Pagination -->
 	</div>
 	<!-- Table -->
 	<div class="overflow-x-auto">

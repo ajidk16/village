@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { requireAuth, requireRole } from "../../utils/rbac";
+import { requireAuth, requireRole } from "@/utils/rbac";
 import {
   createRequest,
   createTemplate,
@@ -10,10 +10,10 @@ import {
   submitRequest,
   issueRequest,
 } from "./service";
-import { parseListQuery } from "../../utils/query";
-import { db } from "../../db/client";
+import { parseListQuery } from "@/utils/query";
+import { db } from "@/db/client";
 import { and, desc, eq, ilike, sql } from "drizzle-orm";
-import { letterRequests, letterTemplates } from "../../db/schema";
+import { letterRequests, letterTemplates } from "@/db/schema";
 
 // Templates (admin)
 export const letterTemplatesRoutes = new Elysia({

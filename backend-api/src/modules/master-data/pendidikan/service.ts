@@ -1,0 +1,132 @@
+import { db } from "@/db/client";
+import { eq, ilike, SQL } from "drizzle-orm";
+import {
+  buildOrderBy,
+  buildWhere,
+  countQuery,
+  parseListQuery,
+} from "@/utils/query";
+import { pendidikan } from "@/db/schema";
+
+export async function listData(query: {
+  q?: string;
+  name?: string;
+  status?: boolean;
+  order?: "asc" | "desc" | string;
+  sort?: string;
+  page?: number | string;
+  limit?: number | string;
+}) {
+  const { page, limit, offset, orderDir, sortKey } = parseListQuery(query);
+
+  const searchCols = [pendidikan.name, pendidikan.status];
+
+  const filters: (SQL<unknown> | undefined)[] = [
+    query.name ? ilike(pendidikan.name, `%${query.name}%`) : undefined,
+    query.status ? ilike(pendidikan.status, `%${query.status}%`) : undefined,
+  ];
+
+  const where = buildWhere({ q: query.q, searchColumns: searchCols, filters });
+
+  const sortColumns = {
+    id: pendidikan.id,
+    name: pendidikan.name,
+    status: pendidikan.status,
+  };
+  const orderBy = buildOrderBy({
+    sortKey,
+    orderDir,
+    columns: sortColumns,
+    defaultColumn: "id",
+  });
+
+  console.log(sortKey, orderDir);
+
+  const rows = await db
+    .select({
+      id: pendidikan.id,
+      name: pendidikan.name,
+      status: pendidikan.status,
+    })
+    .from(pendidikan)
+    .where(where as any)
+    .orderBy(orderBy as any)
+    .limit(limit)
+    .offset(offset);
+
+  const [totalRow] = await db
+    .select({ count: countQuery() })
+    .from(pendidikan)
+    .where(where as any);
+
+  return {
+    status: 200,
+    message: "successfully retrieved pendidikan",
+    items: rows,
+    page,
+    limit,
+    total: totalRow?.count ?? 0,
+  };
+}
+
+export async function dataById(id: number) {
+  const [row] = await db.select().from(pendidikan).limit(1);
+
+  if (!row) {
+    return { status: 404, message: "Resident not found", data: null };
+  }
+
+  return { status: 200, message: "Successfully retrieved resident", data: row };
+}
+
+export async function createData(input: { name: string; status: boolean }) {
+  try {
+    const [created] = await db.insert(pendidikan).values(input);
+
+    return {
+      status: 201,
+      message: "Resident created successfully",
+      data: created,
+    };
+  } catch (error) {
+    return { status: 500, message: "Failed to create resident", data: error };
+  }
+}
+
+export async function updateData(
+  id: number,
+  patch: Partial<{
+    name: string;
+    status: boolean;
+  }>
+) {
+  try {
+    const [updated] = await db
+      .update(pendidikan)
+      .set(patch)
+      .where(eq(pendidikan.id, id))
+      .returning();
+
+    return {
+      status: 200,
+      message: "Resident updated successfully",
+      data: updated,
+    };
+  } catch (error) {
+    return { status: 500, message: "Failed to update resident", data: error };
+  }
+}
+
+export async function deleteData(id: number) {
+  const [deleted] = await db.delete(pendidikan).where(eq(pendidikan.id, id)).returning();
+
+  if (!deleted) {
+    return { status: 404, message: "Resident not found", data: null };
+  }
+
+  return {
+    status: 200,
+    message: "Resident deleted successfully",
+    data: deleted,
+  };
+}

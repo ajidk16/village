@@ -2,6 +2,9 @@
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
 	import { data } from '$lib/utils/sidebar';
+	import Button from '$lib/components/shared/button/button.svelte';
+	import { Menu, X } from '@lucide/svelte';
+	import { size } from 'zod';
 
 	$: currentPath = $page.url.pathname;
 
@@ -71,11 +74,15 @@
 	class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80"
 >
 	<div class="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
-		<button
-			class="rounded-lg border border-slate-200 p-2 lg:hidden dark:border-slate-800"
-			aria-label="Buka sidebar"
-			on:click={() => (drawerOpen = true)}>☰</button
+		<Button
+			rounded="md"
+			size="icon"
+			onClick={() => (drawerOpen = true)}
+			className="lg:hidden"
+			variant="outline"
 		>
+			<Menu size={16} />
+		</Button>
 		<h1 class="text-lg font-semibold capitalize">{currentPath.split('/')[2]}</h1>
 		<div class="ml-auto flex items-center gap-3">
 			<div class="hidden md:block">
@@ -139,7 +146,14 @@
 <!-- Drawer Sidebar (mobile) -->
 {#if drawerOpen}
 	<div class="fixed inset-0 z-50">
-		<div class="absolute inset-0 bg-black/30" on:click={() => (drawerOpen = false)}></div>
+		<div
+			class="absolute inset-0 bg-black/30"
+			role="button"
+			tabindex="0"
+			on:click={() => (drawerOpen = false)}
+			on:keydown={(e) => (e.key === 'Enter' || e.key === ' ' ? (drawerOpen = false) : null)}
+		></div>
+
 		<aside
 			class="absolute top-0 bottom-0 left-0 w-72 border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
 		>
@@ -152,10 +166,16 @@
 					</div>
 					<span class="font-semibold">Desa Harmoni</span>
 				</div>
-				<button
-					class="rounded-lg border border-slate-200 p-2 dark:border-slate-800"
-					on:click={() => (drawerOpen = false)}>✕</button
+
+				<Button
+					rounded="md"
+					size="icon"
+					onClick={() => (drawerOpen = false)}
+					className="lg:hidden"
+					variant="outline"
 				>
+					<X size={16} />
+				</Button>
 			</div>
 			<nav class="mt-4 space-y-1 text-sm">
 				{#each data as item}

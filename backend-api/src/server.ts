@@ -19,6 +19,10 @@ import {
   letterTemplatesRoutes,
 } from "./modules/letters/routes";
 import cors from "@elysiajs/cors";
+import { agamaRoutes } from "./modules/master-data/agama/routes";
+import { pendidikanRoutes } from "./modules/master-data/pendidikan/routes";
+import { pekerjaanRoutes } from "./modules/master-data/pekerjaan/routes";
+import { statusKawinRoutes } from "./modules/master-data/status-kawin/routes";
 
 export function buildServer() {
   const app = new Elysia({ name: "desa-api", prefix: "/api/v1" })
@@ -48,6 +52,11 @@ export function buildServer() {
     .use(complaintsRoutes)
     .use(letterTemplatesRoutes)
     .use(letterRequestsRoutes)
+    .use(agamaRoutes)
+    .use(pendidikanRoutes)
+    .use(pekerjaanRoutes)
+    .use(statusKawinRoutes)
+
     .use(etagPlugin);
 
   return app;
